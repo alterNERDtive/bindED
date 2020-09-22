@@ -11,7 +11,7 @@ namespace bindEDplugin
     {
         private static Dictionary<String, int> _map = new Dictionary<string, int>(256);
 
-        public static string VERSION = "1.1";
+        public static string VERSION = "2.0";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -34,7 +34,9 @@ namespace bindEDplugin
             String strDir = GetPluginPath(vaProxy);
             try
             {
-                String strMap = Path.Combine(strDir, "EDMap.txt");
+                string layout = vaProxy.GetText("bindED.layout");
+                string mapFile = (layout == null ? "EDMap.txt" : $"EDMap-{layout}.txt");
+                String strMap = Path.Combine(strDir, mapFile);
                 if (File.Exists(strMap))
                 {
                     foreach (String line in File.ReadAllLines(strMap, System.Text.Encoding.UTF8))
@@ -53,7 +55,7 @@ namespace bindEDplugin
                 }
                 else
                 {
-                    vaProxy.WriteToLog("bindED Error - EDMap.txt does not exist.  Make sure the EDMap.txt file exists in the same folder as this plugin, otherwise this plugin has nothing to process and cannot continue.", "red");
+                    vaProxy.WriteToLog($"bindED Error - {mapFile} does not exist.  Make sure the {mapFile} file exists in the same folder as this plugin, otherwise this plugin has nothing to process and cannot continue.", "red");
                     return;
                 }
             }
