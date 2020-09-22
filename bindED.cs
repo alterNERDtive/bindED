@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace bindEDplugin
 {
@@ -10,7 +11,7 @@ namespace bindEDplugin
     {
         private static Dictionary<String, int> _map = new Dictionary<string, int>(256);
 
-        public static string VERSION = "1.0.1";
+        public static string VERSION = "1.1";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -81,7 +82,18 @@ namespace bindEDplugin
                     String strBindsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
                     if (System.IO.Directory.Exists(strBindsDir))
                     {
-                        FileInfo[] bindFiles = new DirectoryInfo(strBindsDir).GetFiles().Where(i => i.Extension == ".binds").OrderByDescending(p => p.LastWriteTime).ToArray();
+                        FileInfo[] bindFiles = null;
+
+                        string startFile = Path.Combine(strBindsDir, "StartPreset.start");
+                        if (File.Exists(startFile))
+                        {
+                            bindFiles = new DirectoryInfo(strBindsDir).GetFiles().Where(i => Regex.Match(i.Name, $@"{File.ReadAllText(startFile)}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
+                        }
+
+                        if ((bindFiles?.Count() ?? 0) == 0)
+                        {
+                            bindFiles = new DirectoryInfo(strBindsDir).GetFiles().Where(i => i.Extension == ".binds").OrderByDescending(p => p.LastWriteTime).ToArray();
+                        }
 
                         if (bindFiles.Count() > 0)
                             files = new string[] { bindFiles[0].FullName };
