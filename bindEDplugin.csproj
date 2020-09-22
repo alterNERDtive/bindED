@@ -52,6 +52,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="EDMap-neo2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="EDMap.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

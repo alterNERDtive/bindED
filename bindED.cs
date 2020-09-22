@@ -9,7 +9,7 @@ namespace bindEDplugin
 {
     public class bindEDPlugin
     {
-        private static Dictionary<String, int> _map = new Dictionary<string, int>(256);
+        private static Dictionary<String, int> _map = null;
 
         public static string VERSION = "2.0";
 
@@ -39,6 +39,7 @@ namespace bindEDplugin
                 String strMap = Path.Combine(strDir, mapFile);
                 if (File.Exists(strMap))
                 {
+                    _map = new Dictionary<string, int>(256);
                     foreach (String line in File.ReadAllLines(strMap, System.Text.Encoding.UTF8))
                     {
                         String[] arItem = line.Split(";".ToCharArray(), 2, StringSplitOptions.RemoveEmptyEntries);
