@@ -52,10 +52,10 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="EDMap-neo2.txt">
+    <Content Include="EDMap-de-neo2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="EDMap.txt">
+    <Content Include="EDMap-us.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ReadMe.txt">

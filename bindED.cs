@@ -35,7 +35,7 @@ namespace bindEDplugin
             try
             {
                 string layout = vaProxy.GetText("bindED.layout");
-                string mapFile = (layout == null ? "EDMap.txt" : $"EDMap-{layout.ToLower()}.txt");
+                string mapFile = (layout == null ? "EDMap-us.txt" : $"EDMap-{layout.ToLower()}.txt");
                 String strMap = Path.Combine(strDir, mapFile);
                 if (File.Exists(strMap))
                 {
