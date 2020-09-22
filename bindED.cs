@@ -35,7 +35,7 @@ namespace bindEDplugin
             try
             {
                 string layout = vaProxy.GetText("bindED.layout");
-                string mapFile = (layout == null ? "EDMap.txt" : $"EDMap-{layout}.txt");
+                string mapFile = (layout == null ? "EDMap.txt" : $"EDMap-{layout.ToLower()}.txt");
                 String strMap = Path.Combine(strDir, mapFile);
                 if (File.Exists(strMap))
                 {
@@ -88,14 +88,15 @@ namespace bindEDplugin
                         FileInfo[] bindFiles = null;
 
                         string startFile = Path.Combine(strBindsDir, "StartPreset.start");
+                        DirectoryInfo dirInfo = new DirectoryInfo(strBindsDir);
                         if (File.Exists(startFile))
                         {
-                            bindFiles = new DirectoryInfo(strBindsDir).GetFiles().Where(i => Regex.Match(i.Name, $@"{File.ReadAllText(startFile)}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
+                            bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"{File.ReadAllText(startFile)}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
                         }
 
                         if ((bindFiles?.Count() ?? 0) == 0)
                         {
-                            bindFiles = new DirectoryInfo(strBindsDir).GetFiles().Where(i => i.Extension == ".binds").OrderByDescending(p => p.LastWriteTime).ToArray();
+                            bindFiles = dirInfo.GetFiles().Where(i => i.Extension == ".binds").OrderByDescending(p => p.LastWriteTime).ToArray();
                         }
 
                         if (bindFiles.Count() > 0)
