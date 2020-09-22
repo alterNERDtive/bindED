@@ -9,30 +9,24 @@ namespace bindEDplugin
     public class bindEDPlugin
     {
         private static Dictionary<String, int> _map = new Dictionary<string, int>(256);
-        public static string VA_DisplayName()
-        {
-            return "bindED Plugin v1.0";  
-        }
 
-        public static string VA_DisplayInfo()
-        {
-            return "bindED Plugin\r\n\r\n2016 VoiceAttack.com";  
-        }
+        public static string VERSION = "1.0.1";
 
-        public static Guid VA_Id()
-        {
-            return new Guid("{53D74F33-3F5C-487B-B6D2-A17593DEBE05}");  
-        }
+        public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
-        public static void VA_Init1(dynamic vaProxy)
-        {
-            LoadBinds(vaProxy, false);
-        }
+        public static string VA_DisplayInfo() => "bindED Plugin\r\n\r\n2016 VoiceAttack.com\r\n2020 alterNERDtive";
 
-        private static String GetPluginPath(dynamic vaProxy)
-        {
-            return Path.GetDirectoryName(vaProxy.PluginPath());
-        }
+        public static Guid VA_Id() => new Guid("{524B4B9A-3965-4045-A39A-A239BF6E2838}");
+
+        public static void VA_Init1(dynamic vaProxy) => LoadBinds(vaProxy, false);
+
+        public static void VA_Invoke1(dynamic vaProxy) => LoadBinds(vaProxy, true);
+
+        public static void VA_StopCommand() { }
+
+        public static void VA_Exit1(dynamic vaProxy) { }
+
+        private static String GetPluginPath(dynamic vaProxy) => Path.GetDirectoryName(vaProxy.PluginPath());
 
         public static void LoadBinds(dynamic vaProxy, Boolean fromInvoke)
         {
@@ -194,19 +188,6 @@ namespace bindEDplugin
                 vaProxy.WriteToLog("bindED Error - " + ex.Message, "red");
                 return;
             }
-        }
-
-        public static void VA_Exit1(dynamic vaProxy)
-        {
-        }
-        
-        public static void VA_StopCommand()
-        {
-        }
-        
-        public static void VA_Invoke1(dynamic vaProxy)
-        {
-            LoadBinds(vaProxy, true);
         }
     }
 }

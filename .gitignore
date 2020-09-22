@@ -1,2 +1,4 @@
 .vs/**
 obj/**
+bin/**
+bindEDplugin.csproj.user
