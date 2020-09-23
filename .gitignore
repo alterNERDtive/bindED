@@ -2,3 +2,4 @@
 obj/**
 bin/**
 bindEDplugin.csproj.user
+*.zip
