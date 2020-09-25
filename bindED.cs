@@ -32,11 +32,11 @@ namespace bindEDplugin
         public static void LoadBinds(dynamic vaProxy, Boolean fromInvoke)
         {
             String strDir = GetPluginPath(vaProxy);
+            string layout = vaProxy.GetText("bindED.layout");
+            string mapFile = (layout == null ? "EDMap-en-us.txt" : $"EDMap-{layout.ToLower()}.txt");
+            String strMap = Path.Combine(strDir, mapFile);
             try
             {
-                string layout = vaProxy.GetText("bindED.layout");
-                string mapFile = (layout == null ? "EDMap-en-us.txt" : $"EDMap-{layout.ToLower()}.txt");
-                String strMap = Path.Combine(strDir, mapFile);
                 if (File.Exists(strMap))
                 {
                     _map = new Dictionary<string, int>(256);
@@ -68,7 +68,7 @@ namespace bindEDplugin
 
             if (_map.Count == 0)
             {
-                vaProxy.WriteToLog("bindED Error - EDMap.txt does not contain any elements.", "red");
+                vaProxy.WriteToLog($"bindED Error - {mapFile} does not contain any elements.", "red");
                 return;
             }
 
