@@ -8,7 +8,27 @@ forums](https://forum.voiceattack.com/smf/index.php?topic=564.0).
 You can find the [original README here](ReadMe.txt).
 
 I have taken the original source code and added automatic detection of the
-correct bindings file and support for non-US keyboard layouts.
+correct bindings file and support for non-US keyboard layouts (see below for
+details).
+
+## Usage
+
+### Reading Bindings into VoiceAttack
+
+Invoke the `loadbinds` plugin context. That will populate a bunch of variables
+named `ed<name in the bindings file>` for you that you can use in commands
+instead of hard-wiring key presses, enabling you to share profiles with other
+players more easily.
+
+### Saving the List of Variables
+
+Invoke the `listbinds` plugin context (make sure to tick “Wait for the plugin
+function to finish before continuing”!). That will set a variable
+`~bindED.bindsList` containing all the variable names that you can e.g. write to
+a file.
+
+By default the list is separated by `\r\n`, you can override that behaviour by
+setting `bindED.separator` before invoking the plugin.
 
 ## Automatic Bindings Detection
 

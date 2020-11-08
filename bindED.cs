@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -9,7 +11,11 @@ namespace bindEDplugin
 {
     public class bindEDPlugin
     {
-        private static Dictionary<String, int> _map = null;
+        private static Dictionary<String, int>? _map = null;
+        private static string? _pluginPath = null;
+        private static readonly string _bindingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
+        private static string? _preset = null;
+        private static dynamic? _VA = null;
 
         public static string VERSION = "3.0";
 
@@ -19,171 +25,190 @@ namespace bindEDplugin
 
         public static Guid VA_Id() => new Guid("{524B4B9A-3965-4045-A39A-A239BF6E2838}");
 
-        public static void VA_Init1(dynamic vaProxy) => LoadBinds(vaProxy);
+        public static void VA_Init1(dynamic vaProxy)
+        {
+            _VA = vaProxy;
+            _pluginPath = Path.GetDirectoryName(vaProxy.PluginPath());
+        }
 
-        public static void VA_Invoke1(dynamic vaProxy) => LoadBinds(vaProxy);
+        public static void VA_Invoke1(dynamic vaProxy)
+        {
+            _VA = vaProxy;
+            try
+            {
+                string context = _VA.Context.ToLower();
+                string layout = _VA.GetText("bindED.layout") ?? "en-us";
+                if (context == "listbinds")
+                {
+                    ListBinds(layout, _VA.GetText("bindED.separator") ?? "\r\n");
+                }
+                else if (context == "loadbinds")
+                {
+                    LoadBinds(layout);
+                }
+                else
+                {
+                    LogWarn("Invoking the plugin with no context / a .binds file as context is deprecated and will be removed in a future version. Please invoke the 'loadbinds' context instead.");
+                    LoadBinds(layout);
+                }
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+                return;
+            }
+        }
 
         public static void VA_StopCommand() { }
 
         public static void VA_Exit1(dynamic vaProxy) { }
 
-        private static String GetPluginPath(dynamic vaProxy) => Path.GetDirectoryName(vaProxy.PluginPath());
-
-        public static void LoadBinds(dynamic vaProxy)
+        private static void LogError(string message)
         {
-            String strDir = GetPluginPath(vaProxy);
-            string layout = vaProxy.GetText("bindED.layout");
-            string mapFile = (layout == null ? "EDMap-en-us.txt" : $"EDMap-{layout.ToLower()}.txt");
-            String strMap = Path.Combine(strDir, mapFile);
-            try
+            _VA!.WriteToLog($"ERROR | bindED: {message}", "red");
+        }
+
+        private static void LogWarn(string message)
+        {
+            _VA!.WriteToLog($"WARN | bindED: {message}", "yellow");
+        }
+
+        private static Dictionary<String, int> LoadKeyMap(string layout)
+        {
+            string mapFile = Path.Combine(_pluginPath, $"EDMap-{layout.ToLower()}.txt");
+            if (!File.Exists(mapFile))
             {
-                if (File.Exists(strMap))
+                throw new FileNotFoundException($"No map file for layout '{layout}' found.");
+            }
+            Dictionary<string, int> map = new Dictionary<string, int>(256);
+            foreach (String line in File.ReadAllLines(mapFile, System.Text.Encoding.UTF8))
+            {
+                String[] arItem = line.Split(";".ToCharArray(), 2, StringSplitOptions.RemoveEmptyEntries);
+                if ((arItem.Count() == 2) && (!String.IsNullOrWhiteSpace(arItem[0])) && (!map.ContainsKey(arItem[0])))
                 {
-                    _map = new Dictionary<string, int>(256);
-                    foreach (String line in File.ReadAllLines(strMap, System.Text.Encoding.UTF8))
+                    ushort iKey;
+                    if (ushort.TryParse(arItem[1], out iKey))
                     {
-                        String[] arItem = line.Split(";".ToCharArray(), 2, StringSplitOptions.RemoveEmptyEntries);
-                        if ((arItem.Count() == 2) && (!String.IsNullOrWhiteSpace(arItem[0])) && (!_map.ContainsKey(arItem[0])))
+                        if (iKey > 0 && iKey < 256)
+                            map.Add(arItem[0].Trim(), iKey);
+                    }
+                }
+            }
+            if (map.Count == 0)
+            {
+                throw new Exception($"Map file for {layout} does not contain any elements.");
+            }
+            return map;
+        }
+
+        private static string DetectPreset()
+        {
+            string startFile = Path.Combine(_bindingsDir, "StartPreset.start");
+            if (!File.Exists(startFile))
+            {
+                throw new FileNotFoundException("No 'StartPreset.start' file found. Please run Elite: Dangerous at least once, then restart VoiceAttack.");
+            }
+            return File.ReadAllText(startFile);
+        }
+
+        private static string DetectBindsFile(string preset)
+        {
+            DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
+            FileInfo[] bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"{preset}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
+
+            if (bindFiles.Count() == 0)
+            {
+                throw new FileNotFoundException($"No bindings file found for preset '{preset}'. If this is a default preset, please change anything in Elite’s controls options.");
+            }
+
+            return bindFiles[0].FullName;
+        }
+
+        private static Dictionary<string, string> ReadBinds(string file)
+        {
+            XElement rootElement;
+
+            rootElement = XElement.Load(file);
+
+            Dictionary<string, string> binds = new Dictionary<string, string>(512);
+            if (rootElement != null)
+            {
+                foreach (XElement c in rootElement.Elements().Where(i => i.Elements().Count() > 0))
+                {
+                    foreach (var element in c.Elements().Where(i => i.HasAttributes))
+                    {
+                        List<int> keys = new List<int>();
+                        if (element.Name == "Primary")
                         {
-                            ushort iKey;
-                            if (ushort.TryParse(arItem[1], out iKey))
+                            if (element.Attribute("Device").Value == "Keyboard" && !String.IsNullOrWhiteSpace(element.Attribute("Key").Value) && element.Attribute("Key").Value.StartsWith("Key_"))
                             {
-                                if (iKey > 0 && iKey < 256)
-                                    _map.Add(arItem[0].Trim(), iKey);
+                                foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
+                                {
+                                    if (_map!.ContainsKey(modifier.Attribute("Key").Value))
+                                        keys.Add(_map[modifier.Attribute("Key").Value]);
+                                }
+
+                                if (_map!.ContainsKey(element.Attribute("Key").Value))
+                                    keys.Add(_map[element.Attribute("Key").Value]);
                             }
                         }
-                    }
-                }
-                else
-                {
-                    vaProxy.WriteToLog($"bindED Error - {mapFile} does not exist.  Make sure the {mapFile} file exists in the same folder as this plugin, otherwise this plugin has nothing to process and cannot continue.", "red");
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                vaProxy.WriteToLog("bindED Error - " + ex.Message, "red");
-                return;
-            }
-
-            if (_map.Count == 0)
-            {
-                vaProxy.WriteToLog($"bindED Error - {mapFile} does not contain any elements.", "red");
-                return;
-            }
-
-            String[] files = null;
-
-            if (!String.IsNullOrWhiteSpace(vaProxy.Context))
-            {
-                files = ((String)vaProxy.Context).Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            }
-            else
-            {
-                String strBindsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
-                if (System.IO.Directory.Exists(strBindsDir))
-                {
-                    FileInfo[] bindFiles = null;
-
-                    string startFile = Path.Combine(strBindsDir, "StartPreset.start");
-                    DirectoryInfo dirInfo = new DirectoryInfo(strBindsDir);
-                    if (File.Exists(startFile))
-                    {
-                        bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"{File.ReadAllText(startFile)}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
-                    }
-
-                    if ((bindFiles?.Count() ?? 0) == 0)
-                    {
-                        bindFiles = dirInfo.GetFiles().Where(i => i.Extension == ".binds").OrderByDescending(p => p.LastWriteTime).ToArray();
-                    }
-
-                    if (bindFiles.Count() > 0)
-                        files = new string[] { bindFiles[0].FullName };
-                }
-            }
-            try
-            {
-                foreach (String file in files)
-                {
-                    if (File.Exists(file))
-                    {
-
-                        XElement rootElement = null;
-
-                        try
+                        if (keys.Count == 0) //nothing found in primary... look in secondary
                         {
-                            rootElement = XElement.Load(file);
-                        }
-                        catch (Exception ex)
-                        {
-                            vaProxy.WriteToLog("bindED Error - " + ex.Message, "red");
-                            return;
-                        }
-
-                        if (rootElement != null)
-                        {
-
-                            foreach (XElement c in rootElement.Elements().Where(i => i.Elements().Count() > 0))
+                            if (element.Name == "Secondary")
                             {
-                                foreach (var element in c.Elements().Where(i => i.HasAttributes))
+                                if (element.Attribute("Device").Value == "Keyboard" && !String.IsNullOrWhiteSpace(element.Attribute("Key").Value) && element.Attribute("Key").Value.StartsWith("Key_"))
                                 {
-                                    List<int> _keys = new List<int>();
-                                    if (element.Name == "Primary")
+                                    foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
                                     {
-                                        if (element.Attribute("Device").Value == "Keyboard" && !String.IsNullOrWhiteSpace(element.Attribute("Key").Value) && element.Attribute("Key").Value.StartsWith("Key_"))
-                                        {
-                                            foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
-                                            {
-                                                if (_map.ContainsKey(modifier.Attribute("Key").Value))
-                                                    _keys.Add(_map[modifier.Attribute("Key").Value]);
-                                            }
-
-                                            if (_map.ContainsKey(element.Attribute("Key").Value))
-                                                _keys.Add(_map[element.Attribute("Key").Value]);
-                                        }
-                                    }
-                                    if (_keys.Count == 0) //nothing found in primary... look in secondary
-                                    {
-                                        if (element.Name == "Secondary")
-                                        {
-                                            if (element.Attribute("Device").Value == "Keyboard" && !String.IsNullOrWhiteSpace(element.Attribute("Key").Value) && element.Attribute("Key").Value.StartsWith("Key_"))
-                                            {
-                                                foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
-                                                {
-                                                    if (_map.ContainsKey(modifier.Attribute("Key").Value))
-                                                        _keys.Add(_map[modifier.Attribute("Key").Value]);
-                                                }
-
-                                                if (_map.ContainsKey(element.Attribute("Key").Value))
-                                                    _keys.Add(_map[element.Attribute("Key").Value]);
-                                            }
-                                        }
+                                        if (_map!.ContainsKey(modifier.Attribute("Key").Value))
+                                            keys.Add(_map[modifier.Attribute("Key").Value]);
                                     }
 
-                                    if (_keys.Count > 0)
-                                    {
-                                        String strTextValue = String.Empty;
-                                        foreach (int key in _keys)
-                                            strTextValue += String.Format("[{0}]", key);
-
-                                        vaProxy.SetText("ed" + c.Name.LocalName, strTextValue);
-                                    }
+                                    if (_map!.ContainsKey(element.Attribute("Key").Value))
+                                        keys.Add(_map[element.Attribute("Key").Value]);
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        vaProxy.WriteToLog("bindED Error - The target file indicated by the shortcut does not exist: " + file, "red");
-                        return;
+
+                        if (keys.Count > 0)
+                        {
+                            String strTextValue = String.Empty;
+                            foreach (int key in keys)
+                                strTextValue += String.Format("[{0}]", key);
+
+                            binds.Add($"ed{c.Name.LocalName}", strTextValue);
+                        }
                     }
                 }
             }
-            catch(Exception ex)
+            return binds;
+        }
+
+        private static void SetVariables(Dictionary<string, string> binds)
+        {
+            foreach (KeyValuePair<string,string> bind in binds)
             {
-                vaProxy.WriteToLog("bindED Error - " + ex.Message, "red");
-                return;
+                _VA!.SetText(bind.Key, bind.Value);
             }
+        }
+
+        private static string GetBindsList(Dictionary<string,string> binds, string separator)
+        {
+            return string.Join(separator, binds.Keys);
+        }
+
+        public static void ListBinds(string layout, string separator)
+        {
+            _map = LoadKeyMap(layout);
+            _preset = DetectPreset();
+            _VA!.SetText("~bindED.bindsList", GetBindsList(ReadBinds(DetectBindsFile(_preset)), separator));
+        }
+
+        public static void LoadBinds(string layout)
+        {
+            _map = LoadKeyMap(layout);
+            _preset = DetectPreset();
+            SetVariables(ReadBinds(DetectBindsFile(_preset)));
         }
     }
 }
