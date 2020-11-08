@@ -11,7 +11,7 @@ namespace bindEDplugin
     {
         private static Dictionary<String, int> _map = null;
 
-        public static string VERSION = "2.0";
+        public static string VERSION = "3.0";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -19,9 +19,9 @@ namespace bindEDplugin
 
         public static Guid VA_Id() => new Guid("{524B4B9A-3965-4045-A39A-A239BF6E2838}");
 
-        public static void VA_Init1(dynamic vaProxy) => LoadBinds(vaProxy, false);
+        public static void VA_Init1(dynamic vaProxy) => LoadBinds(vaProxy);
 
-        public static void VA_Invoke1(dynamic vaProxy) => LoadBinds(vaProxy, true);
+        public static void VA_Invoke1(dynamic vaProxy) => LoadBinds(vaProxy);
 
         public static void VA_StopCommand() { }
 
@@ -29,7 +29,7 @@ namespace bindEDplugin
 
         private static String GetPluginPath(dynamic vaProxy) => Path.GetDirectoryName(vaProxy.PluginPath());
 
-        public static void LoadBinds(dynamic vaProxy, Boolean fromInvoke)
+        public static void LoadBinds(dynamic vaProxy)
         {
             String strDir = GetPluginPath(vaProxy);
             string layout = vaProxy.GetText("bindED.layout");
@@ -74,51 +74,31 @@ namespace bindEDplugin
 
             String[] files = null;
 
-            if (fromInvoke)
+            if (!String.IsNullOrWhiteSpace(vaProxy.Context))
             {
-                if (!String.IsNullOrWhiteSpace(vaProxy.Context))
-                {
-                    files = ((String)vaProxy.Context).Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                }
-                else
-                {
-                    String strBindsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
-                    if (System.IO.Directory.Exists(strBindsDir))
-                    {
-                        FileInfo[] bindFiles = null;
-
-                        string startFile = Path.Combine(strBindsDir, "StartPreset.start");
-                        DirectoryInfo dirInfo = new DirectoryInfo(strBindsDir);
-                        if (File.Exists(startFile))
-                        {
-                            bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"{File.ReadAllText(startFile)}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
-                        }
-
-                        if ((bindFiles?.Count() ?? 0) == 0)
-                        {
-                            bindFiles = dirInfo.GetFiles().Where(i => i.Extension == ".binds").OrderByDescending(p => p.LastWriteTime).ToArray();
-                        }
-
-                        if (bindFiles.Count() > 0)
-                            files = new string[] { bindFiles[0].FullName };
-                    }
-                }
+                files = ((String)vaProxy.Context).Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             }
             else
             {
-                try
+                String strBindsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
+                if (System.IO.Directory.Exists(strBindsDir))
                 {
-                    files = System.IO.Directory.GetFiles(strDir, "*.lnk", SearchOption.TopDirectoryOnly);
-                    IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
-                    for (int i = 0; i < files.Count(); i++)
+                    FileInfo[] bindFiles = null;
+
+                    string startFile = Path.Combine(strBindsDir, "StartPreset.start");
+                    DirectoryInfo dirInfo = new DirectoryInfo(strBindsDir);
+                    if (File.Exists(startFile))
                     {
-                        files[i] = ((IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(files[i])).TargetPath;
+                        bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"{File.ReadAllText(startFile)}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
                     }
-                }
-                catch (Exception ex)
-                {
-                    vaProxy.WriteToLog("bindED Error - " + ex.Message, "red");
-                    return;
+
+                    if ((bindFiles?.Count() ?? 0) == 0)
+                    {
+                        bindFiles = dirInfo.GetFiles().Where(i => i.Extension == ".binds").OrderByDescending(p => p.LastWriteTime).ToArray();
+                    }
+
+                    if (bindFiles.Count() > 0)
+                        files = new string[] { bindFiles[0].FullName };
                 }
             }
             try
