@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace bindEDplugin
 {
@@ -16,6 +17,8 @@ namespace bindEDplugin
         private static readonly string _bindingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
         private static string? _preset = null;
         private static dynamic? _VA = null;
+        private static FileSystemWatcher? _watcher = null;
+        private static Dictionary<string,int> _fileEventCount = new Dictionary<string, int>();
 
         public static string VERSION = "3.0";
 
@@ -68,6 +71,11 @@ namespace bindEDplugin
             _VA!.WriteToLog($"ERROR | bindED: {message}", "red");
         }
 
+        private static void LogInfo(string message)
+        {
+            _VA!.WriteToLog($"INFO | bindED: {message}", "blue");
+        }
+
         private static void LogWarn(string message)
         {
             _VA!.WriteToLog($"WARN | bindED: {message}", "yellow");
@@ -114,7 +122,7 @@ namespace bindEDplugin
         private static string DetectBindsFile(string preset)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
-            FileInfo[] bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"{preset}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
+            FileInfo[] bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"^{preset}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
 
             if (bindFiles.Count() == 0)
             {
@@ -186,13 +194,13 @@ namespace bindEDplugin
 
         private static void SetVariables(Dictionary<string, string> binds)
         {
-            foreach (KeyValuePair<string,string> bind in binds)
+            foreach (KeyValuePair<string, string> bind in binds)
             {
                 _VA!.SetText(bind.Key, bind.Value);
             }
         }
 
-        private static string GetBindsList(Dictionary<string,string> binds, string separator)
+        private static string GetBindsList(Dictionary<string, string> binds, string separator)
         {
             return string.Join(separator, binds.Keys);
         }
@@ -206,9 +214,61 @@ namespace bindEDplugin
 
         public static void LoadBinds(string layout)
         {
-            _map = LoadKeyMap(layout);
-            _preset = DetectPreset();
-            SetVariables(ReadBinds(DetectBindsFile(_preset)));
+            try
+            {
+                _map = LoadKeyMap(layout);
+                _preset = DetectPreset();
+                SetVariables(ReadBinds(DetectBindsFile(_preset)));
+            }
+            finally
+            {
+                if (_watcher == null)
+                {
+                    FileSystemWatcher watcher = new FileSystemWatcher(_bindingsDir);
+                    watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
+                    watcher.Changed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    watcher.Created += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    watcher.Renamed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    watcher.EnableRaisingEvents = true;
+                }
+            }
+        }
+
+        private static void FileChangedHandler(string name)
+        {
+            // so apparently these events all fire twice … let’s make sure we only handle it once.
+            if (_fileEventCount.ContainsKey(name))
+            {
+                _fileEventCount[name] += 1;
+            }
+            else
+            {
+                _fileEventCount.Add(name, 1);
+            }
+            if (_fileEventCount[name] % 2 == 0)
+            {
+                try
+                {
+                    // let’s make semi-sure that the file isn’t locked …
+                    // FIXXME: solve this properly
+                    Thread.Sleep(500);
+                    if (name == "StartPreset.start")
+                    {
+                        LogInfo("Controls preset changed, reloading …");
+                        _preset = DetectPreset();
+                        SetVariables(ReadBinds(DetectBindsFile(_preset)));
+                    }
+                    else if (Regex.Match(name, $@"{_preset}(\.3\.0)?\.binds$").Success)
+                    {
+                        LogInfo($"Bindings file '{name}' has changed, reloading …");
+                        SetVariables(ReadBinds(DetectBindsFile(_preset!)));
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogError(e.Message);
+                }
+            }
         }
     }
 }

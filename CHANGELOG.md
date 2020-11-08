@@ -19,6 +19,10 @@ should basically never be used anyway.
 
 ## Added
 
+* After the initial `loadbinds` invocation the plugin will monitor the bindings
+  directory for changes to a) the `StartPreset.start` file (preset has changed)
+  and b) the binds file(s) corresponding to the current preset. Changes are
+  automatically detected.
 * The `listbinds` context will set the text variable `~bindED.bindsList` to a
   list of bindings present in the current bindings file. See README for details.
   (#1).
