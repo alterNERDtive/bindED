@@ -31,7 +31,17 @@ namespace bindEDplugin
         public static void VA_Init1(dynamic vaProxy)
         {
             _VA = vaProxy;
-            _pluginPath = Path.GetDirectoryName(vaProxy.PluginPath());
+            _VA.TextVariableChanged += new Action<string, string, string, Guid?>(TextVariableChanged);
+            _pluginPath = Path.GetDirectoryName(_VA.PluginPath());
+
+            try
+            {
+                LoadBinds("en-us");
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+            }
         }
 
         public static void VA_Invoke1(dynamic vaProxy)
@@ -40,7 +50,7 @@ namespace bindEDplugin
             try
             {
                 string context = _VA.Context.ToLower();
-                string layout = _VA.GetText("bindED.layout") ?? "en-us";
+                string layout = _VA.GetText("bindED.layout#") ?? "en-us";
                 if (context == "listbinds")
                 {
                     ListBinds(layout, _VA.GetText("bindED.separator") ?? "\r\n");
@@ -58,13 +68,21 @@ namespace bindEDplugin
             catch (Exception e)
             {
                 LogError(e.Message);
-                return;
             }
         }
 
         public static void VA_StopCommand() { }
 
         public static void VA_Exit1(dynamic vaProxy) { }
+
+        public static void TextVariableChanged(string name, string from, string to, Guid? internalID)
+        {
+            if (name.Equals("bindED.layout#"))
+            {
+                LogInfo($"Keyboard layout changed to '{to}', reloading …");
+                LoadBinds(to);
+            }
+        }
 
         private static void LogError(string message)
         {

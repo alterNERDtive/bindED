@@ -15,10 +15,14 @@ details).
 
 ### Reading Bindings into VoiceAttack
 
-Invoke the `loadbinds` plugin context. That will populate a bunch of variables
-named `ed<name in the bindings file>` for you that you can use in commands
-instead of hard-wiring key presses, enabling you to share profiles with other
-players more easily.
+You don’t have to do anything! When VoiceAttack loads, bindED will automatically
+detect your bindings. It will also keep a watchful eye on Elite’s bindings
+folder and reload them when there is a change!
+
+If something goes awry, you can still manually call the `loadbinds` plugin
+context to force a refresh.
+
+If you are not using a US QWERTY keyboard layout, see below.
 
 ### Saving the List of Variables
 
@@ -58,15 +62,16 @@ that information will be incorrect for any symbols that are on a different key
 than they are on the US layout.
 
 I have added the option to use maps for other keyboard layouts. In order to do
-so you will have to set a text variable in VoiceAttack called `bindED.layout` to
-the layout you want to use before invoking the plugin. If the variable is not
+so you will have to set a text variable in VoiceAttack called `bindED.layout#`
+to the layout you want to use. BindED will be notified of the variable changing
+and reload your bindings with the appropriate key map. If the variable is not
 set it will defaut to “en-us”, leaving the original behaviour intact.
 
 I have included a map file for [Neo2](https://neo-layout.org)
 (`EDMap-de-neo2.txt`) which is the layout that I am using personally. If you are
 on a different layout, you will have to create a corresponding map file yourself
 or prod me to add it. E.g. for the french AZERTY it would be `EDMap-fr-fr.text`
-and set `bindED.layout` to “fr-fr”. For US Dvorak, `EDmap-en-us-dvorak` and
+and set `bindED.layout#` to “fr-fr”. For US Dvorak, `EDmap-en-us-dvorak` and
 “en-us-dvorak”. You can see where this is going.
 
 For more information on [creating new supported keyboard layouts see the

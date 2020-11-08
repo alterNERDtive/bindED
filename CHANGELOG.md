@@ -19,10 +19,12 @@ should basically never be used anyway.
 
 ## Added
 
-* After the initial `loadbinds` invocation the plugin will monitor the bindings
+* Bindings are now automagically read when VoiceAttack loads and when
+  `bindED.layout#` is changed.
+* After the initial reading of bindings the plugin will monitor the bindings
   directory for changes to a) the `StartPreset.start` file (preset has changed)
   and b) the binds file(s) corresponding to the current preset. Changes are
-  automatically detected.
+  automatically applied.
 * The `listbinds` context will set the text variable `~bindED.bindsList` to a
   list of bindings present in the current bindings file. See README for details.
   (#1).
