@@ -51,7 +51,6 @@ namespace bindEDplugin
             set
             {
                 _keyMap = value;
-                Binds = null;
             }
         }
         private static Dictionary<string, int>? _keyMap;
@@ -67,12 +66,12 @@ namespace bindEDplugin
         }
         private static string? _preset;
 
-        private static Dictionary<string, string>? Binds
+        private static Dictionary<string, List<string>>? Binds
         {
             get => _binds ??= ReadBinds(DetectBindsFile(Preset));
             set => _binds = value;
         }
-        private static Dictionary<string, string>? _binds;
+        private static Dictionary<string, List<string>>? _binds;
 
         public static string VERSION = "3.0";
 
@@ -116,6 +115,10 @@ namespace bindEDplugin
                 {
                     LoadBinds(Binds);
                 }
+                else if (context == "missingbinds")
+                {
+                    MissingBinds(Binds);
+                }
                 else
                 {
                     LogWarn("Invoking the plugin with no context / a .binds file as context is deprecated and will be removed in a future version. Please invoke the 'loadbinds' context instead.");
@@ -158,19 +161,66 @@ namespace bindEDplugin
             _VA!.WriteToLog($"WARN | bindED: {message}", "yellow");
         }
 
-        public static void ListBinds(Dictionary<string, string>? binds, string separator)
+        public static void ListBinds(Dictionary<string, List<string>>? binds, string separator)
         {
             _VA!.SetText("~bindED.bindsList", string.Join(separator, binds!.Keys));
             LogInfo("List of Elite binds saved to TXT variable '~bindED.bindsList'.");
         }
 
-        private static void LoadBinds(Dictionary<string, string>? binds)
+        private static void LoadBinds(Dictionary<string, List<string>>? binds)
         {
-            foreach (KeyValuePair<string, string> bind in binds!)
+            foreach (KeyValuePair<string, List<string>> bind in binds!)
             {
-                _VA!.SetText(bind.Key, bind.Value);
+                string value = string.Empty;
+                bool valid = true;
+                if (bind.Value.Count == 0)
+                {
+                    //LogInfo($"No keyboard bind for '{bind.Key}' found, skipping …");
+                }
+                else
+                {
+                    foreach (string key in bind.Value)
+                    {
+                        if (KeyMap!.ContainsKey(key))
+                        {
+                            value += $"[{KeyMap[key]}]";
+                        }
+                        else
+                        {
+                            valid = false;
+                            LogError($"No valid key code for '{key}' found, skipping bind for '{bind.Key}' …");
+                        }
+                    }
+                    if (valid)
+                    {
+                        _VA!.SetText(bind.Key, value);
+                    }
+                }
             }
             LogInfo($"Elite binds '{Preset}' for layout '{Layout}' loaded successfully.");
+        }
+
+        private static void MissingBinds(Dictionary<string, List<string>>? binds)
+        {
+            List<string> missing = new List<string>(256);
+            foreach (KeyValuePair<string, List<string>> bind in binds!)
+            {
+
+                if (bind.Value.Count == 0)
+                {
+                    missing.Add(bind.Key);
+                }
+            }
+            if (missing.Count > 0)
+            {
+                _VA!.SetText("~bindED.missingBinds", string.Join("\r\n", missing));
+                _VA!.SetBoolean("~bindED.missingBinds", true);
+                LogInfo("List of missing Elite binds saved to TXT variable '~bindED.missingBinds'.");
+            }
+            else
+            {
+                LogInfo($"No missing keyboard binds found.");
+            }
         }
 
         private static Dictionary<String, int> LoadKeyMap(string layout)
@@ -224,61 +274,44 @@ namespace bindEDplugin
             return bindFiles[0].FullName;
         }
 
-        private static Dictionary<string, string> ReadBinds(string file)
+        private static Dictionary<string, List<string>> ReadBinds(string file)
         {
             XElement rootElement;
 
             rootElement = XElement.Load(file);
 
-            Dictionary<string, string> binds = new Dictionary<string, string>(512);
+            Dictionary<string, List<string>> binds = new Dictionary<string, List<string>>(512);
             if (rootElement != null)
             {
                 foreach (XElement c in rootElement.Elements().Where(i => i.Elements().Count() > 0))
                 {
+                    List<string> keys = new List<string>();
                     foreach (var element in c.Elements().Where(i => i.HasAttributes))
                     {
-                        List<int> keys = new List<int>();
                         if (element.Name == "Primary")
                         {
                             if (element.Attribute("Device").Value == "Keyboard" && !String.IsNullOrWhiteSpace(element.Attribute("Key").Value) && element.Attribute("Key").Value.StartsWith("Key_"))
                             {
                                 foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
                                 {
-                                    if (KeyMap!.ContainsKey(modifier.Attribute("Key").Value))
-                                        keys.Add(KeyMap[modifier.Attribute("Key").Value]);
+                                    keys.Add(modifier.Attribute("Key").Value);
                                 }
-
-                                if (KeyMap!.ContainsKey(element.Attribute("Key").Value))
-                                    keys.Add(KeyMap[element.Attribute("Key").Value]);
+                                keys.Add(element.Attribute("Key").Value);
                             }
                         }
-                        if (keys.Count == 0) //nothing found in primary... look in secondary
+                        if (keys.Count == 0 && element.Name == "Secondary") //nothing found in primary... look in secondary
                         {
-                            if (element.Name == "Secondary")
+                            if (element.Attribute("Device").Value == "Keyboard" && !String.IsNullOrWhiteSpace(element.Attribute("Key").Value) && element.Attribute("Key").Value.StartsWith("Key_"))
                             {
-                                if (element.Attribute("Device").Value == "Keyboard" && !String.IsNullOrWhiteSpace(element.Attribute("Key").Value) && element.Attribute("Key").Value.StartsWith("Key_"))
+                                foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
                                 {
-                                    foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
-                                    {
-                                        if (KeyMap!.ContainsKey(modifier.Attribute("Key").Value))
-                                            keys.Add(KeyMap[modifier.Attribute("Key").Value]);
-                                    }
-
-                                    if (KeyMap!.ContainsKey(element.Attribute("Key").Value))
-                                        keys.Add(KeyMap[element.Attribute("Key").Value]);
+                                    keys.Add(modifier.Attribute("Key").Value);
                                 }
+                                keys.Add(element.Attribute("Key").Value);
                             }
-                        }
-
-                        if (keys.Count > 0)
-                        {
-                            String strTextValue = String.Empty;
-                            foreach (int key in keys)
-                                strTextValue += String.Format("[{0}]", key);
-
-                            binds.Add($"ed{c.Name.LocalName}", strTextValue);
                         }
                     }
+                    binds.Add($"ed{c.Name.LocalName}", keys);
                 }
             }
             return binds;
