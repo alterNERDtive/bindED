@@ -142,7 +142,14 @@ namespace bindEDplugin
             {
                 LogInfo($"Keyboard layout changed to '{to}', reloading …");
                 Layout = to;
-                LoadBinds(Binds);
+                try
+                {
+                    LoadBinds(Binds);
+                }
+                catch (Exception e)
+                {
+                    LogError(e.Message);
+                }
             }
         }
 
