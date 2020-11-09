@@ -2,23 +2,77 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace bindEDplugin
 {
     public class bindEDPlugin
     {
-        private static Dictionary<String, int>? _map = null;
-        private static string? _pluginPath = null;
+        private static dynamic? _VA;
+        private static string? _pluginPath;
         private static readonly string _bindingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
-        private static string? _preset = null;
-        private static dynamic? _VA = null;
-        private static FileSystemWatcher? _watcher = null;
-        private static readonly Dictionary<string,int> _fileEventCount = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> _fileEventCount = new Dictionary<string, int>();
+
+        private static FileSystemWatcher Watcher
+        {
+            get
+            {
+                if (_watcher == null)
+                {
+                    _watcher = new FileSystemWatcher(_bindingsDir);
+                    _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
+                    _watcher.Changed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    _watcher.Created += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    _watcher.Renamed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                }
+                return _watcher!;
+            }
+        }
+        private static FileSystemWatcher? _watcher;
+
+        private static string Layout
+        {
+            get => _layout ??= _VA?.GetText("bindED.layout#") ?? "en-us";
+            set
+            {
+                _layout = value;
+                KeyMap = null;
+            }
+        }
+        private static string? _layout;
+
+        private static Dictionary<string, int>? KeyMap
+        {
+            get => _keyMap ??= LoadKeyMap(Layout);
+            set
+            {
+                _keyMap = value;
+                Binds = null;
+            }
+        }
+        private static Dictionary<string, int>? _keyMap;
+
+        private static string? Preset
+        {
+            get => _preset ??= DetectPreset();
+            set
+            {
+                _preset = value;
+                Binds = null;
+            }
+        }
+        private static string? _preset;
+
+        private static Dictionary<string, string>? Binds
+        {
+            get => _binds ??= ReadBinds(DetectBindsFile(Preset));
+            set => _binds = value;
+        }
+        private static Dictionary<string, string>? _binds;
 
         public static string VERSION = "3.0";
 
@@ -36,11 +90,15 @@ namespace bindEDplugin
 
             try
             {
-                LoadBinds("en-us");
+                LoadBinds(Binds);
             }
             catch (Exception e)
             {
                 LogError(e.Message);
+            }
+            finally
+            {
+                Watcher.EnableRaisingEvents = true;
             }
         }
 
@@ -50,20 +108,19 @@ namespace bindEDplugin
             try
             {
                 string context = _VA.Context.ToLower();
-                string layout = _VA.GetText("bindED.layout#") ?? "en-us";
                 if (context == "listbinds")
                 {
-                    ListBinds(layout, _VA.GetText("bindED.separator") ?? "\r\n");
+                    ListBinds(Binds, _VA.GetText("bindED.separator") ?? "\r\n");
                 }
                 else if (context == "loadbinds")
                 {
-                    LoadBinds(layout);
+                    LoadBinds(Binds);
                 }
                 else
                 {
                     LogWarn("Invoking the plugin with no context / a .binds file as context is deprecated and will be removed in a future version. Please invoke the 'loadbinds' context instead.");
                     LogWarn("Bindings are also read automatically on VoiceAttack start and there should be no need to do it explicitly.");
-                    LoadBinds(layout);
+                    LoadBinds(Binds);
                 }
             }
             catch (Exception e)
@@ -81,7 +138,8 @@ namespace bindEDplugin
             if (name.Equals("bindED.layout#"))
             {
                 LogInfo($"Keyboard layout changed to '{to}', reloading …");
-                LoadBinds(to);
+                Layout = to;
+                LoadBinds(Binds);
             }
         }
 
@@ -98,6 +156,21 @@ namespace bindEDplugin
         private static void LogWarn(string message)
         {
             _VA!.WriteToLog($"WARN | bindED: {message}", "yellow");
+        }
+
+        public static void ListBinds(Dictionary<string, string>? binds, string separator)
+        {
+            _VA!.SetText("~bindED.bindsList", string.Join(separator, binds!.Keys));
+            LogInfo("List of Elite binds saved to TXT variable '~bindED.bindsList'.");
+        }
+
+        private static void LoadBinds(Dictionary<string, string>? binds)
+        {
+            foreach (KeyValuePair<string, string> bind in binds!)
+            {
+                _VA!.SetText(bind.Key, bind.Value);
+            }
+            LogInfo($"Elite binds '{Preset}' for layout '{Layout}' loaded successfully.");
         }
 
         private static Dictionary<String, int> LoadKeyMap(string layout)
@@ -138,7 +211,7 @@ namespace bindEDplugin
             return File.ReadAllText(startFile);
         }
 
-        private static string DetectBindsFile(string preset)
+        private static string DetectBindsFile(string? preset)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
             FileInfo[] bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"^{preset}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
@@ -171,12 +244,12 @@ namespace bindEDplugin
                             {
                                 foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
                                 {
-                                    if (_map!.ContainsKey(modifier.Attribute("Key").Value))
-                                        keys.Add(_map[modifier.Attribute("Key").Value]);
+                                    if (KeyMap!.ContainsKey(modifier.Attribute("Key").Value))
+                                        keys.Add(KeyMap[modifier.Attribute("Key").Value]);
                                 }
 
-                                if (_map!.ContainsKey(element.Attribute("Key").Value))
-                                    keys.Add(_map[element.Attribute("Key").Value]);
+                                if (KeyMap!.ContainsKey(element.Attribute("Key").Value))
+                                    keys.Add(KeyMap[element.Attribute("Key").Value]);
                             }
                         }
                         if (keys.Count == 0) //nothing found in primary... look in secondary
@@ -187,12 +260,12 @@ namespace bindEDplugin
                                 {
                                     foreach (var modifier in element.Elements().Where(i => i.Name.LocalName == "Modifier"))
                                     {
-                                        if (_map!.ContainsKey(modifier.Attribute("Key").Value))
-                                            keys.Add(_map[modifier.Attribute("Key").Value]);
+                                        if (KeyMap!.ContainsKey(modifier.Attribute("Key").Value))
+                                            keys.Add(KeyMap[modifier.Attribute("Key").Value]);
                                     }
 
-                                    if (_map!.ContainsKey(element.Attribute("Key").Value))
-                                        keys.Add(_map[element.Attribute("Key").Value]);
+                                    if (KeyMap!.ContainsKey(element.Attribute("Key").Value))
+                                        keys.Add(KeyMap[element.Attribute("Key").Value]);
                                 }
                             }
                         }
@@ -209,48 +282,6 @@ namespace bindEDplugin
                 }
             }
             return binds;
-        }
-
-        private static void SetVariables(Dictionary<string, string> binds)
-        {
-            foreach (KeyValuePair<string, string> bind in binds)
-            {
-                _VA!.SetText(bind.Key, bind.Value);
-            }
-        }
-
-        private static string GetBindsList(Dictionary<string, string> binds, string separator)
-        {
-            return string.Join(separator, binds.Keys);
-        }
-
-        public static void ListBinds(string layout, string separator)
-        {
-            _map = LoadKeyMap(layout);
-            _preset = DetectPreset();
-            _VA!.SetText("~bindED.bindsList", GetBindsList(ReadBinds(DetectBindsFile(_preset)), separator));
-        }
-
-        public static void LoadBinds(string layout)
-        {
-            try
-            {
-                _map = LoadKeyMap(layout);
-                _preset = DetectPreset();
-                SetVariables(ReadBinds(DetectBindsFile(_preset)));
-            }
-            finally
-            {
-                if (_watcher == null)
-                {
-                    FileSystemWatcher watcher = new FileSystemWatcher(_bindingsDir);
-                    watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
-                    watcher.Changed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
-                    watcher.Created += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
-                    watcher.Renamed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
-                    watcher.EnableRaisingEvents = true;
-                }
-            }
         }
 
         private static void FileChangedHandler(string name)
@@ -274,13 +305,14 @@ namespace bindEDplugin
                     if (name == "StartPreset.start")
                     {
                         LogInfo("Controls preset changed, reloading …");
-                        _preset = DetectPreset();
-                        SetVariables(ReadBinds(DetectBindsFile(_preset)));
+                        Preset = null;
+                        LoadBinds(Binds);
                     }
                     else if (Regex.Match(name, $@"{_preset}(\.3\.0)?\.binds$").Success)
                     {
                         LogInfo($"Bindings file '{name}' has changed, reloading …");
-                        SetVariables(ReadBinds(DetectBindsFile(_preset!)));
+                        Binds = null;
+                        LoadBinds(Binds);
                     }
                 }
                 catch (Exception e)
