@@ -19,6 +19,7 @@ should basically never be used anyway.
 
 ## Added
 
+* `en-gb` key map. Thank you A.Cyprus for the work on that!
 * Bindings are now automagically read when VoiceAttack loads and when
   `bindED.layout#` is changed.
 * After the initial reading of bindings the plugin will monitor the bindings

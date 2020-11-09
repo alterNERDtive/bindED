@@ -33,6 +33,11 @@ If you are not using a US QWERTY keyboard layout, see below.
 
 ## Support for non-US Keyboard Layouts
 
+Shipped layouts:
+* en-US
+* en-GB
+* de-neo2
+
 If you are using any non-US layout you might have noticed that some binds don’t
 work. Elite internally uses keycode values (a number assigned to each key on the
 keyboard) for its bindings but for some reason both displays and saves them as
