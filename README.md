@@ -11,9 +11,16 @@ I have taken the original source code and added automatic detection of the
 correct bindings file and support for non-US keyboard layouts (see below for
 details).
 
-## Usage
+## Migrating from the Old Plugin
 
-### Reading Bindings into VoiceAttack
+If you use this as a drop-in replacement for the initial version all commands
+invoking the plugin will throw an error message. Gary has asked me to change the
+plugin’s GUID, and the plugin with the old one will no longer be found.
+
+_That is irrelevant in basically all cases and can safely be ignored_. Binds
+will be read automatically when VoiceAttack starts, and when they change.
+
+## Usage
 
 You don’t have to do anything! When VoiceAttack loads, bindED will automatically
 detect your bindings. It will also keep a watchful eye on Elite’s bindings
@@ -23,29 +30,6 @@ If something goes awry, you can still manually call the `loadbinds` plugin
 context to force a refresh.
 
 If you are not using a US QWERTY keyboard layout, see below.
-
-### Saving the List of Variables
-
-Invoke the `listbinds` plugin context (make sure to tick “Wait for the plugin
-function to finish before continuing”!). That will set a variable
-`~bindED.bindsList` containing all the variable names that you can e.g. write to
-a file.
-
-By default the list is separated by `\r\n`, you can override that behaviour by
-setting `bindED.separator` before invoking the plugin.
-
-## Automatic Bindings Detection
-
-Elite creates a file `StartPreset.start` in the Bindings directory that contains
-the name of the currently active profile. The plugin now reads that file and
-loads the correct profile automatically.
-
-Should the file for some reason a) not exist, b) be empty or c) contain an
-invalid preset name the old default is used: the most recently changed `.binds`
-file.
-
-You can still manually provide a bindings file to use instead by setting it as
-the plugin context, as before.
 
 ## Support for non-US Keyboard Layouts
 
@@ -76,3 +60,14 @@ and set `bindED.layout#` to “fr-fr”. For US Dvorak, `EDmap-en-us-dvorak` and
 
 For more information on [creating new supported keyboard layouts see the
 Wiki](https://github.com/alterNERDtive/bindED/wiki/Keyboard-Layouts).
+
+## Troubleshooting
+
+If you run into any kinds of trouble with missing bindings the first step should
+be to import and load the included `bindED-reports` profile. It will generate
+both a list of bind names used by Elite and a report of binds that do not have a
+keyboard shortcut assigned, and put them on your Desktop.
+
+Need help beyond that? Please [file an
+issue](https://github.com/alterNERDtive/bindED/issues/new) or [hop into
+Discord](https://discord.gg/kXtXm54).

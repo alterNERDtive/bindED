@@ -1,6 +1,6 @@
 # devel
 
-I did a copmlete refactoring of everything to prepare for some juicy new
+I did a complete refactoring of everything to prepare for some juicy new
 features! Sadly that also meant breaking backwards compatibility. On the plus
 side, the things that no longer work like they did in Gary’s initial release
 should basically never be used anyway.
@@ -28,6 +28,10 @@ should basically never be used anyway.
 * The `listbinds` context will set the text variable `~bindED.bindsList` to a
   list of bindings present in the current bindings file. See README for details.
   (#1).
+* The `missingbinds` context will create a report of missing binds (anything
+  that doesn’t have keyboard binds) and save it to `~bindED.missingBinds`.
+* The included `bindED-reports` profile runs a missing binds report and a binds
+  list report when you load it and save them to your Desktop.
 
 -----
 
