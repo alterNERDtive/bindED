@@ -18,7 +18,7 @@ namespace bindEDplugin
         private static string? _preset = null;
         private static dynamic? _VA = null;
         private static FileSystemWatcher? _watcher = null;
-        private static Dictionary<string,int> _fileEventCount = new Dictionary<string, int>();
+        private static readonly Dictionary<string,int> _fileEventCount = new Dictionary<string, int>();
 
         public static string VERSION = "3.0";
 
@@ -62,6 +62,7 @@ namespace bindEDplugin
                 else
                 {
                     LogWarn("Invoking the plugin with no context / a .binds file as context is deprecated and will be removed in a future version. Please invoke the 'loadbinds' context instead.");
+                    LogWarn("Bindings are also read automatically on VoiceAttack start and there should be no need to do it explicitly.");
                     LoadBinds(layout);
                 }
             }
