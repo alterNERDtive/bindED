@@ -40,7 +40,7 @@ keysyms (the label on the key), according to the UK QWERTY keyboard layout. That
 means VoiceAttack can’t just send the keysym it reads from a binding, it has to
 translate it into the corresponding keycode.
 
-The original plugin contained a `EDMap.txt` file that contains infomration on
+The original plugin contained a `EDMap.txt` file that contains information on
 that conversion _for the US keyboard layout_. If you are using any other layout
 that information will be incorrect for any symbols that are on a different key
 than they are on the US layout.

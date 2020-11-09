@@ -138,7 +138,7 @@ namespace bindEDplugin
 
         public static void TextVariableChanged(string name, string from, string to, Guid? internalID)
         {
-            if (name.Equals("bindED.layout#"))
+            if (name == "bindED.layout#")
             {
                 LogInfo($"Keyboard layout changed to '{to}', reloading …");
                 Layout = to;
