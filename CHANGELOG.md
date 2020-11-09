@@ -24,12 +24,11 @@ should basically never be used anyway.
 * After the initial reading of bindings the plugin will monitor the bindings
   directory for changes to a) the `StartPreset.start` file (preset has changed)
   and b) the binds file(s) corresponding to the current preset. Changes are
-  automatically applied.
+  automatically applied. (#3)
 * The `listbinds` context will set the text variable `~bindED.bindsList` to a
-  list of bindings present in the current bindings file. See README for details.
-  (#1).
+  list of bindings present in the current bindings file. (#1)
 * The `missingbinds` context will create a report of missing binds (anything
-  that doesn’t have keyboard binds) and save it to `~bindED.missingBinds`.
+  that doesn’t have keyboard binds) and save it to `~bindED.missingBinds`. (#2)
 * The included `bindED-reports` profile runs a missing binds report and a binds
   list report when you load it and save them to your Desktop.
 
