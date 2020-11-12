@@ -1,4 +1,4 @@
-# devel
+# 3.0 (2020-11-12)
 
 I did a complete refactoring of everything to prepare for some juicy new
 features! Sadly that also meant breaking backwards compatibility. On the plus
