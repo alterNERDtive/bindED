@@ -34,7 +34,7 @@ namespace bindEDplugin
         }
         private static FileSystemWatcher? _watcher;
 
-        private static string Layout
+        private static string? Layout
         {
             get => _layout ??= _VA?.GetText("bindED.layout#") ?? "en-us";
             set
@@ -113,6 +113,9 @@ namespace bindEDplugin
                 }
                 else if (context == "loadbinds")
                 {
+                    // force reset everything
+                    Layout = null;
+                    Preset = null;
                     LoadBinds(Binds);
                 }
                 else if (context == "missingbinds")
