@@ -31,7 +31,7 @@ should basically never be used anyway.
 * The `missingbinds` context will create a report of missing binds (anything
   that doesn’t have keyboard binds) and save it to `~bindED.missingBinds`. (#2)
 * The included `bindED-reports` profile runs a missing binds report and a binds
-  list report when you load it and save them to your Desktop.
+  list report when you load it and saves them to your Desktop.
 
 -----
 
