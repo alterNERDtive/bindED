@@ -17,22 +17,39 @@ namespace bindEDplugin
         private static readonly string _bindingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
         private static readonly Dictionary<string, int> _fileEventCount = new Dictionary<string, int>();
 
-        private static FileSystemWatcher Watcher
+        private static FileSystemWatcher BindsWatcher
         {
             get
             {
-                if (_watcher == null)
+                if (_bindsWatcher == null)
                 {
-                    _watcher = new FileSystemWatcher(_bindingsDir);
-                    _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
-                    _watcher.Changed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
-                    _watcher.Created += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
-                    _watcher.Renamed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    _bindsWatcher = new FileSystemWatcher(_bindingsDir);
+                    _bindsWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
+                    _bindsWatcher.Changed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    _bindsWatcher.Created += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    _bindsWatcher.Renamed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
                 }
-                return _watcher!;
+                return _bindsWatcher!;
             }
         }
-        private static FileSystemWatcher? _watcher;
+        private static FileSystemWatcher? _bindsWatcher;
+
+        private static FileSystemWatcher MapWatcher
+        {
+            get
+            {
+                if (_mapWatcher == null)
+                {
+                    _mapWatcher = new FileSystemWatcher(_pluginPath);
+                    _mapWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
+                    _mapWatcher.Changed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    _mapWatcher.Created += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                    _mapWatcher.Renamed += (source, EventArgs) => { FileChangedHandler(EventArgs.Name); };
+                }
+                return _mapWatcher!;
+            }
+        }
+        private static FileSystemWatcher? _mapWatcher;
 
         private static string? Layout
         {
@@ -47,7 +64,7 @@ namespace bindEDplugin
 
         private static Dictionary<string, int>? KeyMap
         {
-            get => _keyMap ??= LoadKeyMap(Layout);
+            get => _keyMap ??= LoadKeyMap(Layout!);
             set
             {
                 _keyMap = value;
@@ -97,7 +114,8 @@ namespace bindEDplugin
             }
             finally
             {
-                Watcher.EnableRaisingEvents = true;
+                BindsWatcher.EnableRaisingEvents = true;
+                MapWatcher.EnableRaisingEvents = true;
             }
         }
 
@@ -345,9 +363,19 @@ namespace bindEDplugin
                     // let’s make semi-sure that the file isn’t locked …
                     // FIXXME: solve this properly
                     Thread.Sleep(500);
-                    if (name == "StartPreset.start")
+                    // Going by name only is a bit naïve given we’re watching 2
+                    // separate directories, but hey … worst case if something
+                    // is doing unintended things is unnecessarily reloading the
+                    // binds.
+                    if (name == $"EDMap-{Layout!.ToLower()}.txt")
                     {
-                        LogInfo("Controls preset changed, reloading …");
+                        LogInfo($"Key map for layout '{Layout}' has changed, reloading …");
+                        KeyMap = null;
+                        LoadBinds(Binds);
+                    }
+                    else if (name == "StartPreset.start")
+                    {
+                        LogInfo("Controls preset has changed, reloading …");
                         Preset = null;
                         LoadBinds(Binds);
                     }
