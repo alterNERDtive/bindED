@@ -1,3 +1,17 @@
+## devel
+
+## Changed
+
+* Invoking the `loadbinds` context will now force reset everything and reload
+  from scratch. (#5)
+
+## Added
+
+* The current layout’s key map file is now monitored for changes. Should make
+  adding support for new layouts slightly less annoying. (#4)
+
+-----
+
 # 3.0 (2020-11-12)
 
 I did a complete refactoring of everything to prepare for some juicy new
