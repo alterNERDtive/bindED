@@ -65,10 +65,7 @@ namespace bindEDplugin
         private static Dictionary<string, int>? KeyMap
         {
             get => _keyMap ??= LoadKeyMap(Layout!);
-            set
-            {
-                _keyMap = value;
-            }
+            set => _keyMap = value;
         }
         private static Dictionary<string, int>? _keyMap;
 
@@ -94,7 +91,7 @@ namespace bindEDplugin
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
-        public static string VA_DisplayInfo() => "bindED Plugin\r\n\r\n2016 VoiceAttack.com\r\n2020 alterNERDtive";
+        public static string VA_DisplayInfo() => "bindED Plugin\r\n\r\n2016 VoiceAttack.com\r\n2020–2021 alterNERDtive";
 
         public static Guid VA_Id() => new Guid("{524B4B9A-3965-4045-A39A-A239BF6E2838}");
 
@@ -103,6 +100,9 @@ namespace bindEDplugin
             _VA = vaProxy;
             _VA.TextVariableChanged += new Action<string, string, string, Guid?>(TextVariableChanged);
             _pluginPath = Path.GetDirectoryName(_VA.PluginPath());
+
+            _VA.SetText("bindED.version", VERSION);
+            _VA.SetText("bindED.fork", "alterNERDtive");
 
             try
             {
