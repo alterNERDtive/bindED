@@ -75,4 +75,4 @@ keyboard shortcut assigned, and put them on your Desktop.
 
 Need help beyond that? Please [file an
 issue](https://github.com/alterNERDtive/bindED/issues/new) or [hop into
-Discord](https://discord.gg/kXtXm54).
+Discord](https://discord.gg/YeXh2s5UC6).
