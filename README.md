@@ -11,6 +11,12 @@ I have taken the original source code and added automatic detection of the
 correct bindings file and support for non-US keyboard layouts (see below for
 details).
 
+## Installing
+
+Grab `bindEDplugin.zip` from the [release
+page](https://github.com/alterNERDtive/bindED/releases/latest) and extract it
+into your VoiceAttack’s `Apps` directory.
+
 ## Migrating from the Old Plugin
 
 If you use this as a drop-in replacement for the initial version all commands
