@@ -80,9 +80,16 @@ namespace bindEDplugin
         }
         private static string? _preset;
 
+        private static string? BindsPath
+        {
+            get => _bindsPath ??= DetectBindsFile(Preset);
+            set => _bindsPath = value;
+        }
+        private static string? _bindsPath;
+
         private static Dictionary<string, List<string>>? Binds
         {
-            get => _binds ??= ReadBinds(DetectBindsFile(Preset));
+            get => _binds ??= ReadBinds(BindsPath!);
             set => _binds = value;
         }
         private static Dictionary<string, List<string>>? _binds;
@@ -134,6 +141,7 @@ namespace bindEDplugin
                     // force reset everything
                     Layout = null;
                     Preset = null;
+                    BindsPath = null;
                     LoadBinds(Binds);
                 }
                 else if (context == "missingbinds")
@@ -142,9 +150,18 @@ namespace bindEDplugin
                 }
                 else
                 {
-                    LogWarn("Invoking the plugin with no context / a .binds file as context is deprecated and will be removed in a future version. Please invoke the 'loadbinds' context instead.");
-                    LogWarn("Bindings are also read automatically on VoiceAttack start and there should be no need to do it explicitly.");
-                    LoadBinds(Binds);
+                    string bindsPath = context;
+                    if (File.Exists(bindsPath))
+                    {
+                        BindsPath = bindsPath;
+                        Binds = null;
+                        LoadBinds(Binds);
+                    }
+                    else
+                    {
+                        LogError($"The target file specified by the context does not exist: '{bindsPath}'");
+                        return;
+                    }
                 }
             }
             catch (Exception e)
@@ -304,6 +321,8 @@ namespace bindEDplugin
 
         private static Dictionary<string, List<string>> ReadBinds(string file)
         {
+            LogInfo($"Reading binds file at '{file}'.");
+
             XElement rootElement;
 
             rootElement = XElement.Load(file);
