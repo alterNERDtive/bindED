@@ -14,7 +14,10 @@ namespace bindEDplugin
     {
         private static dynamic? _VA;
         private static string? _pluginPath;
-        private static readonly string _bindingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
+        private static readonly string _bindingsDir = Path.Combine(Environment.GetFolderPath(
+            Environment.SpecialFolder.LocalApplicationData),
+            @"Frontier Developments\Elite Dangerous\Options\Bindings"
+            );
         private static readonly Dictionary<string, int> _fileEventCount = new Dictionary<string, int>();
 
         private static FileSystemWatcher BindsWatcher
@@ -292,7 +295,9 @@ namespace bindEDplugin
         private static string DetectBindsFile(string? preset)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
-            FileInfo[] bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"^{preset}(\.[34]\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
+            FileInfo[] bindFiles = dirInfo.GetFiles()
+                .Where(i => Regex.Match(i.Name, $@"^{preset}(\.[34]\.0)?\.binds$").Success)
+                .OrderByDescending(p => p.LastWriteTime).ToArray();
 
             if (bindFiles.Count() == 0)
             {
