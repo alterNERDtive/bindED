@@ -37,6 +37,22 @@ context to force a refresh.
 
 If you are not using a US QWERTY keyboard layout, see below.
 
+### Horizons vs. Odyssey
+
+**Note**: If you do not own Odyssey, everything will work just as before!
+
+Sadly for the time being Odyssey and Horizons will basically be separate games.
+That also means they have separate binds files.
+
+BindED will by default always use the last edited file, be that the base preset,
+Horizons or Odyssey.
+
+To keep hassle to a minimum, the recommended way to change binds is to do it
+from Odyssey. When a change to the Odyssey file is detected, the plugin will
+by default overwrite Horizons’ binds with it. To prevent that and keep entirely
+separate binds, you can set `bindED.disableHorizonsSync#` (yes, including the
+pound sign) to `true` in your VoiceAttack profile.
+
 ## Support for non-US Keyboard Layouts
 
 Shipped layouts:

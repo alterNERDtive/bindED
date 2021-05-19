@@ -14,7 +14,10 @@ namespace bindEDplugin
     {
         private static dynamic? _VA;
         private static string? _pluginPath;
-        private static readonly string _bindingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Frontier Developments\Elite Dangerous\Options\Bindings");
+        private static readonly string _bindingsDir = Path.Combine(Environment.GetFolderPath(
+            Environment.SpecialFolder.LocalApplicationData),
+            @"Frontier Developments\Elite Dangerous\Options\Bindings"
+            );
         private static readonly Dictionary<string, int> _fileEventCount = new Dictionary<string, int>();
 
         private static FileSystemWatcher BindsWatcher
@@ -87,7 +90,7 @@ namespace bindEDplugin
         }
         private static Dictionary<string, List<string>>? _binds;
 
-        public static string VERSION = "3.0";
+        public static string VERSION = "4.0";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -142,9 +145,7 @@ namespace bindEDplugin
                 }
                 else
                 {
-                    LogWarn("Invoking the plugin with no context / a .binds file as context is deprecated and will be removed in a future version. Please invoke the 'loadbinds' context instead.");
-                    LogWarn("Bindings are also read automatically on VoiceAttack start and there should be no need to do it explicitly.");
-                    LoadBinds(Binds);
+                    LogError($"Invalid plugin context {context}.");
                 }
             }
             catch (Exception e)
@@ -292,7 +293,9 @@ namespace bindEDplugin
         private static string DetectBindsFile(string? preset)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
-            FileInfo[] bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"^{preset}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
+            FileInfo[] bindFiles = dirInfo.GetFiles()
+                .Where(i => Regex.Match(i.Name, $@"^{preset}(\.[34]\.0)?\.binds$").Success)
+                .OrderByDescending(p => p.LastWriteTime).ToArray();
 
             if (bindFiles.Count() == 0)
             {
@@ -379,11 +382,21 @@ namespace bindEDplugin
                         Preset = null;
                         LoadBinds(Binds);
                     }
-                    else if (Regex.Match(name, $@"{_preset}(\.3\.0)?\.binds$").Success)
+                    else if (Regex.Match(name, $@"{Preset}(\.[34]\.0)?\.binds$").Success)
                     {
                         LogInfo($"Bindings file '{name}' has changed, reloading …");
                         Binds = null;
                         LoadBinds(Binds);
+                        
+                        // copy Odyssey -> Horizons
+                        if (name == $"{Preset}.4.0.binds" && !_VA!.GetBoolean("bindED.disableHorizonsSync#"))
+                        {
+                            File.WriteAllText(
+                                Path.Combine(_bindingsDir, $"{Preset}.3.0.binds"),
+                                File.ReadAllText(Path.Combine(_bindingsDir, name))
+                                    .Replace("MajorVersion=\"4\" MinorVersion=\"0\">", "MajorVersion=\"3\" MinorVersion=\"0\">")
+                                );
+                        }
                     }
                 }
                 catch (Exception e)

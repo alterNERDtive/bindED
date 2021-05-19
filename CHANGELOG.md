@@ -1,3 +1,44 @@
+# 4.0 (2021-05-19)
+
+**Note**: If you do not own Odyssey, everything will work just as before!
+
+I, too, do not own Odyssey. So while I have tried testing various things with
+mock Odyssey binds files, please keep an eye out for bugs and [file an
+issue](https://github.com/alterNERDtive/bindED/issues/new/) if you
+encounter any. And check back for a potential 4.0.1 soon. TYVM!
+
+**IMPORTANT**: Please backup your binds files before installing this release,
+just in case. You can find them in
+`%localappdata%\Frontier Developments\Elite Dangerous\Options\Bindings`.
+
+Sadly for the time being Odyssey and Horizons will basically be separate games.
+That also means they have separate binds files.
+
+BindED will by default always use the last edited file, be that the base preset,
+Horizons or Odyssey.
+
+To keep hassle to a minimum, the recommended way to change binds is to do it
+from Odyssey. When a change to the Odyssey file is detected, the plugin will
+by default overwrite Horizons’ binds with it. To prevent that and keep entirely
+separate binds, you can set `bindED.disableHorizonsSync#` (yes, including the
+pound sign) to `true` in your VoiceAttack profile.
+
+## Added
+
+* Odyssey binds file support (`*.4.0.binds`). (#14)
+* `bindED.disableHorizonsSync#` configuration option: Set this (to `true`) in
+  your VoiceAttack profile to disable automatically syncing Odyssey binds
+  changes to Horizons binds.
+
+## Removed
+
+* empty plugin context: Invoking the plugin without context no longer gives a
+  deprecation warning and will instead fail.
+* binds file as plugin context: Invoking the plugin with a binds file as context
+  no longer gives a deprecation warning and will instead fail.
+
+-----
+
 # 3.1 (2021-01-29)
 
 ## Changed
