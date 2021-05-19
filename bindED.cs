@@ -87,7 +87,7 @@ namespace bindEDplugin
         }
         private static Dictionary<string, List<string>>? _binds;
 
-        public static string VERSION = "3.1";
+        public static string VERSION = "4.0";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -292,7 +292,7 @@ namespace bindEDplugin
         private static string DetectBindsFile(string? preset)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
-            FileInfo[] bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"^{preset}(\.3\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
+            FileInfo[] bindFiles = dirInfo.GetFiles().Where(i => Regex.Match(i.Name, $@"^{preset}(\.[34]\.0)?\.binds$").Success).OrderByDescending(p => p.LastWriteTime).ToArray();
 
             if (bindFiles.Count() == 0)
             {
