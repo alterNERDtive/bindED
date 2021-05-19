@@ -145,9 +145,7 @@ namespace bindEDplugin
                 }
                 else
                 {
-                    LogWarn("Invoking the plugin with no context / a .binds file as context is deprecated and will be removed in a future version. Please invoke the 'loadbinds' context instead.");
-                    LogWarn("Bindings are also read automatically on VoiceAttack start and there should be no need to do it explicitly.");
-                    LoadBinds(Binds);
+                    LogError($"Invalid plugin context {context}.");
                 }
             }
             catch (Exception e)

@@ -30,6 +30,13 @@ pound sign) to `true` in your VoiceAttack profile.
   your VoiceAttack profile to disable automatically syncing Odyssey binds
   changes to Horizons binds.
 
+## Removed
+
+* empty plugin context: Invoking the plugin without context no longer gives a
+  deprecation warning and will instead fail.
+* binds file as plugin context: Invoking the plugin with a binds file as context
+  no longer gives a deprecation warning and will instead fail.
+
 -----
 
 # 3.1 (2021-01-29)
