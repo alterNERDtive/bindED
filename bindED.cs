@@ -379,11 +379,21 @@ namespace bindEDplugin
                         Preset = null;
                         LoadBinds(Binds);
                     }
-                    else if (Regex.Match(name, $@"{_preset}(\.3\.0)?\.binds$").Success)
+                    else if (Regex.Match(name, $@"{Preset}(\.[34]\.0)?\.binds$").Success)
                     {
                         LogInfo($"Bindings file '{name}' has changed, reloading …");
                         Binds = null;
                         LoadBinds(Binds);
+                        
+                        // copy Odyssey -> Horizons
+                        if (name == $"{Preset}.4.0.binds" && !_VA!.GetBoolean("bindED.disableHorizonsSync#"))
+                        {
+                            File.WriteAllText(
+                                Path.Combine(_bindingsDir, $"{Preset}.3.0.binds"),
+                                File.ReadAllText(Path.Combine(_bindingsDir, name))
+                                    .Replace("MajorVersion=\"4\" MinorVersion=\"0\">", "MajorVersion=\"3\" MinorVersion=\"0\">")
+                                );
+                        }
                     }
                 }
                 catch (Exception e)
