@@ -6,6 +6,13 @@
   to specify a binds file instead of auto-detecting it from the currently active
   preset.
 
+## Changed
+
+* Updated the README to reflect that you need to load the game once, and that
+  you need to have changed at least a single bind.
+* Updated the README to reflect that you have to use a single preset for all
+  sections if you’re playing Odyssey.
+
 # 4.0 (2021-05-19)
 
 **Note**: If you do not own Odyssey, everything will work just as before!

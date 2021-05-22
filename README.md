@@ -28,9 +28,18 @@ will be read automatically when VoiceAttack starts, and when they change.
 
 ## Usage
 
-You don’t have to do anything! When VoiceAttack loads, bindED will automatically
-detect your bindings. It will also keep a watchful eye on Elite’s bindings
-folder and reload them when there is a change!
+Before starting VoiceAttack with the plugin installed, make sure that you have
+loaded the game at least once! That will create the directory structure the
+plugin is going to read from. You also need to have changed _any_ key in
+controls options. You will probably have made some changes anyway.
+
+For Horizons players, that’s it! When VoiceAttack loads, bindED will
+automatically detect your bindings. It will also keep a watchful eye on Elite’s
+bindings folder and reload them when there is a change!
+
+For Odyssey players, there is an additional caveat: you have to use the same
+preset for all 4 sections (general, ship, SRV, foot). Sadly it’s not apparent
+from the files which binds belong to which.
 
 If something goes awry, you can still manually call the `loadbinds` plugin
 context to force a refresh.
