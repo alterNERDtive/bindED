@@ -299,12 +299,16 @@ namespace bindEDplugin
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
             FileInfo[] bindFiles = dirInfo.GetFiles()
-                .Where(i => Regex.Match(i.Name, $@"^{preset}(\.[34]\.0)?\.binds$").Success)
-                .OrderByDescending(p => p.LastWriteTime).ToArray();
+                .Where(i => Regex.Match(i.Name, $@"^{preset}\.[34]\.0\.binds$").Success)
+                .OrderByDescending(p => p.Name).ToArray();
 
             if (bindFiles.Count() == 0)
             {
-                throw new FileNotFoundException($"No bindings file found for preset '{preset}'. If this is a default preset, please change anything in Elite’s controls options.");
+                bindFiles = dirInfo.GetFiles($"{preset}.binds");
+                if (bindFiles.Count() == 0)
+                {
+                    throw new FileNotFoundException($"No bindings file found for preset '{preset}'. If this is a default preset, please change anything in Elite’s controls options.");
+                }
             }
 
             return bindFiles[0].FullName;
