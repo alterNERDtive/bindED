@@ -57,10 +57,12 @@ BindED will by default always use the last edited file, be that the base preset,
 Horizons or Odyssey.
 
 To keep hassle to a minimum, the recommended way to change binds is to do it
-from Odyssey. When a change to the Odyssey file is detected, the plugin will
-by default overwrite Horizons’ binds with it. To prevent that and keep entirely
+from Odyssey. When a change to the Odyssey file is detected, the plugin will by
+default overwrite Horizons’ binds with it. To prevent that and keep entirely
 separate binds, you can set `bindED.disableHorizonsSync#` (yes, including the
-pound sign) to `true` in your VoiceAttack profile.
+pound sign) to `true` in your VoiceAttack profile. Then, after changing anything
+from Horizons, you’ll have to tell the plugin to load the Horizons file (see
+below).
 
 ### Specifying a Binds File to Load
 
