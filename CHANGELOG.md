@@ -13,6 +13,11 @@
 * Updated the README to reflect that you have to use a single preset for all
   sections if you’re playing Odyssey.
 
+## Fixed
+
+* Now only reading the first line of `startPreset.start` to work correctly with
+  Odyssey.
+
 # 4.0 (2021-05-19)
 
 **Note**: If you do not own Odyssey, everything will work just as before!

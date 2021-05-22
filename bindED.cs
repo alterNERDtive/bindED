@@ -292,7 +292,7 @@ namespace bindEDplugin
             {
                 throw new FileNotFoundException("No 'StartPreset.start' file found. Please run Elite: Dangerous at least once, then restart VoiceAttack.");
             }
-            return File.ReadAllText(startFile);
+            return File.ReadAllLines(startFile).First();
         }
 
         private static string DetectBindsFile(string? preset)
