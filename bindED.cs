@@ -90,7 +90,7 @@ namespace bindEDplugin
         }
         private static Dictionary<string, List<string>>? _binds;
 
-        public static string VERSION = "4.0";
+        public static string VERSION = "4.1";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -137,6 +137,10 @@ namespace bindEDplugin
                     // force reset everything
                     Layout = null;
                     Preset = null;
+                    if (!String.IsNullOrWhiteSpace(_VA.GetText("~bindsFile")))
+                    {
+                        Binds = ReadBinds(Path.Combine(_bindingsDir, _VA.GetText("~bindsFile")));
+                    }
                     LoadBinds(Binds);
                 }
                 else if (context == "missingbinds")
@@ -226,7 +230,8 @@ namespace bindEDplugin
                     }
                 }
             }
-            LogInfo($"Elite binds '{Preset}' for layout '{Layout}' loaded successfully.");
+
+            LogInfo($"Elite binds '{(String.IsNullOrWhiteSpace(_VA!.GetText("~bindsFile")) ?  Preset : _VA!.GetText("~bindsFile"))}' for layout '{Layout}' loaded successfully.");
         }
 
         private static void MissingBinds(Dictionary<string, List<string>>? binds)

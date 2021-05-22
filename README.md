@@ -53,6 +53,20 @@ by default overwrite Horizons’ binds with it. To prevent that and keep entirely
 separate binds, you can set `bindED.disableHorizonsSync#` (yes, including the
 pound sign) to `true` in your VoiceAttack profile.
 
+### Specifying a Binds File to Load
+
+This should generally not be necessary!
+
+You can set the text variable `~bindsFile` to a specific file name (e.g.
+`custom.3.0.binds`) before executing the `loadbinds` context to have that
+specific binds file loaded.
+
+Make sure to only use the _file name_ of an existing binds file, do _not_
+specify the full path.
+
+This should be a last resort effort for when the game introduces changes that
+break the plugin’s auto detection.
+
 ## Support for non-US Keyboard Layouts
 
 Shipped layouts:

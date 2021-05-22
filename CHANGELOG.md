@@ -1,3 +1,11 @@
+# devel
+
+## Added
+
+* optional `~bindsFile` parameter for the `loadbinds` plugin context: use that
+  to specify a binds file instead of auto-detecting it from the currently active
+  preset.
+
 # 4.0 (2021-05-19)
 
 **Note**: If you do not own Odyssey, everything will work just as before!
