@@ -1,4 +1,4 @@
-# devel
+# 4.1 (2021-05-22)
 
 ## Added
 
@@ -18,6 +18,8 @@
 * Now only reading the first line of `startPreset.start` to work correctly with
   Odyssey. (#15)
 * Now correctly prioritizing `.4.0.binds` > `.3.0.binds` > `.binds`. (#20)
+
+-----
 
 # 4.0 (2021-05-19)
 
