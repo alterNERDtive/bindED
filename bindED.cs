@@ -90,7 +90,7 @@ namespace bindEDplugin
         }
         private static Dictionary<string, List<string>>? _binds;
 
-        public static string VERSION = "4.0";
+        public static string VERSION = "4.1";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -137,6 +137,10 @@ namespace bindEDplugin
                     // force reset everything
                     Layout = null;
                     Preset = null;
+                    if (!String.IsNullOrWhiteSpace(_VA.GetText("~bindsFile")))
+                    {
+                        Binds = ReadBinds(Path.Combine(_bindingsDir, _VA.GetText("~bindsFile")));
+                    }
                     LoadBinds(Binds);
                 }
                 else if (context == "missingbinds")
@@ -226,7 +230,8 @@ namespace bindEDplugin
                     }
                 }
             }
-            LogInfo($"Elite binds '{Preset}' for layout '{Layout}' loaded successfully.");
+
+            LogInfo($"Elite binds '{(String.IsNullOrWhiteSpace(_VA!.GetText("~bindsFile")) ?  Preset : _VA!.GetText("~bindsFile"))}' for layout '{Layout}' loaded successfully.");
         }
 
         private static void MissingBinds(Dictionary<string, List<string>>? binds)
@@ -287,19 +292,23 @@ namespace bindEDplugin
             {
                 throw new FileNotFoundException("No 'StartPreset.start' file found. Please run Elite: Dangerous at least once, then restart VoiceAttack.");
             }
-            return File.ReadAllText(startFile);
+            return File.ReadAllLines(startFile).First();
         }
 
         private static string DetectBindsFile(string? preset)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
             FileInfo[] bindFiles = dirInfo.GetFiles()
-                .Where(i => Regex.Match(i.Name, $@"^{preset}(\.[34]\.0)?\.binds$").Success)
-                .OrderByDescending(p => p.LastWriteTime).ToArray();
+                .Where(i => Regex.Match(i.Name, $@"^{preset}\.[34]\.0\.binds$").Success)
+                .OrderByDescending(p => p.Name).ToArray();
 
             if (bindFiles.Count() == 0)
             {
-                throw new FileNotFoundException($"No bindings file found for preset '{preset}'. If this is a default preset, please change anything in Elite’s controls options.");
+                bindFiles = dirInfo.GetFiles($"{preset}.binds");
+                if (bindFiles.Count() == 0)
+                {
+                    throw new FileNotFoundException($"No bindings file found for preset '{preset}'. If this is a default preset, please change anything in Elite’s controls options.");
+                }
             }
 
             return bindFiles[0].FullName;

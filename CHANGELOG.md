@@ -1,3 +1,26 @@
+# 4.1 (2021-05-22)
+
+## Added
+
+* optional `~bindsFile` parameter for the `loadbinds` plugin context: use that
+  to specify a binds file instead of auto-detecting it from the currently active
+  preset. (#18)
+
+## Changed
+
+* Updated the README to reflect that you need to load the game once, and that
+  you need to have changed at least a single bind. (#19)
+* Updated the README to reflect that you have to use a single preset for all
+  sections if you’re playing Odyssey.
+
+## Fixed
+
+* Now only reading the first line of `startPreset.start` to work correctly with
+  Odyssey. (#15)
+* Now correctly prioritizing `.4.0.binds` > `.3.0.binds` > `.binds`. (#20)
+
+-----
+
 # 4.0 (2021-05-19)
 
 **Note**: If you do not own Odyssey, everything will work just as before!

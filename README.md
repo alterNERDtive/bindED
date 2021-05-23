@@ -28,9 +28,18 @@ will be read automatically when VoiceAttack starts, and when they change.
 
 ## Usage
 
-You don’t have to do anything! When VoiceAttack loads, bindED will automatically
-detect your bindings. It will also keep a watchful eye on Elite’s bindings
-folder and reload them when there is a change!
+Before starting VoiceAttack with the plugin installed, make sure that you have
+loaded the game at least once! That will create the directory structure the
+plugin is going to read from. You also need to have changed _any_ key in
+controls options. You will probably have made some changes anyway.
+
+For Horizons players, that’s it! When VoiceAttack loads, bindED will
+automatically detect your bindings. It will also keep a watchful eye on Elite’s
+bindings folder and reload them when there is a change!
+
+For Odyssey players, there is an additional caveat: you have to use the same
+preset for all 4 sections (general, ship, SRV, foot). Sadly it’s not apparent
+from the files which binds belong to which.
 
 If something goes awry, you can still manually call the `loadbinds` plugin
 context to force a refresh.
@@ -48,10 +57,26 @@ BindED will by default always use the last edited file, be that the base preset,
 Horizons or Odyssey.
 
 To keep hassle to a minimum, the recommended way to change binds is to do it
-from Odyssey. When a change to the Odyssey file is detected, the plugin will
-by default overwrite Horizons’ binds with it. To prevent that and keep entirely
+from Odyssey. When a change to the Odyssey file is detected, the plugin will by
+default overwrite Horizons’ binds with it. To prevent that and keep entirely
 separate binds, you can set `bindED.disableHorizonsSync#` (yes, including the
-pound sign) to `true` in your VoiceAttack profile.
+pound sign) to `true` in your VoiceAttack profile. Then, after changing anything
+from Horizons, you’ll have to tell the plugin to load the Horizons file (see
+below).
+
+### Specifying a Binds File to Load
+
+This should generally not be necessary!
+
+You can set the text variable `~bindsFile` to a specific file name (e.g.
+`custom.3.0.binds`) before executing the `loadbinds` context to have that
+specific binds file loaded.
+
+Make sure to only use the _file name_ of an existing binds file, do _not_
+specify the full path.
+
+This should be a last resort effort for when the game introduces changes that
+break the plugin’s auto detection.
 
 ## Support for non-US Keyboard Layouts
 
