@@ -2,6 +2,10 @@
 
 ## Added
 
+* Pretty printed documentation! You can find it at
+  https://alterNERDtive.github.io/bindED.
+* Troubleshooting guide! You can find it at
+  https://alterNERDtive.github.io/bindED/troubleshooting.
 * `diagnostics` plugin context: writes current plugin state to the log for
   troubleshooting.
 * `bindED-diagnostics` profile: runs the `diagnostics` plugin context on load.
