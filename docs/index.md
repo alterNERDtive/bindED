@@ -1,4 +1,4 @@
-# bindED
+﻿# bindED
 
 This VoiceAttack plugin reads keybindings in Elite:Dangerous and stores them as
 VoiceAttack variables. It was originally written by Gary (the developer of
@@ -25,6 +25,18 @@ For Odyssey players, there is an additional caveat: you have to use the same
 preset for all 4 sections (general, ship, SRV, foot). Sadly it’s not apparent
 from the files which of these sections a bind belongs to, so there is no simple
 way to read multiple files properly.
+
+## Using Binds In Commands
+
+Each bind in Elite Dangerous has a name assigned in the binds file. The plugin
+takes this name, prepends `ed` and turns it into a VoiceAttack variable.
+
+To press the corresponding key in the game, you will have to create a new
+`Key Press` action in a VoiceAttack command and use the desired variable named
+after the ingame bind. In order to toggle your landing gear for example you will
+have to create a `Key Press` action and use the `edLandingGearToggle` variable.
+
+![[keypress.png]]
 
 ## Supported Keyboard Layouts
 
