@@ -116,9 +116,16 @@ Wiki](https://github.com/alterNERDtive/bindED/wiki/Keyboard-Layouts).
 ## Troubleshooting
 
 If you run into any kinds of trouble with missing bindings the first step should
-be to import and load the included `bindED-reports` profile. It will generate
+be to import and load the included `bindED-diagnostics` profile. It will output
+the current plugin state (keyboard layout, preset and binds file used) to the
+VoiceAttack log.
+
+If that seems correct, there’s the `bindED-reports` profile. It will generate
 both a list of bind names used by Elite and a report of binds that do not have a
-keyboard shortcut assigned, and put them on your Desktop.
+keyboard shortcut assigned, and put them on your Desktop. Note that those lists
+are currently not filtered in any way and will contain _all_ binds regardless if
+they are used in any profiles nor if they can even have a keyboard key assigned
+(e.g. axes).
 
 Need help beyond that? Please [file an
 issue](https://github.com/alterNERDtive/bindED/issues/new) or [hop into

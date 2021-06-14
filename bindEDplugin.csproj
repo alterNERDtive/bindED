@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="bindED-diagnostics-Profile.vap" />
     <None Include="bindED-reports-Profile.vap">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

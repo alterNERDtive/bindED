@@ -1,3 +1,12 @@
+# devel
+
+## Added
+
+* `diagnostics` plugin context: writes current plugin state to the log for
+  troubleshooting.
+* `bindED-diagnostics` profile: runs the `diagnostics` plugin context on load.
+  Should be the first troubleshooting step.
+
 # 4.1 (2021-05-22)
 
 ## Added

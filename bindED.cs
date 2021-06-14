@@ -128,7 +128,14 @@ namespace bindEDplugin
             try
             {
                 string context = _VA.Context.ToLower();
-                if (context == "listbinds")
+                if (context == "diagnostics")
+                {
+                    LogInfo($"current keybord layout: {Layout}");
+                    LogInfo($"current preset: {Preset}");
+                    LogInfo($"detected binds file: {(new FileInfo(DetectBindsFile(Preset))).Name}");
+                    LogInfo($"detected binds file (full path): {DetectBindsFile(Preset)}");
+                }
+                else if (context == "listbinds")
                 {
                     ListBinds(Binds, _VA.GetText("bindED.separator") ?? "\r\n");
                 }
