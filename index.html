@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="This VoiceAttack plugin reads keybindings in Elite:Dangerous and stores them as VoiceAttack variables.">
+  <meta name="author" content="alterNERDtive">
+  <link rel="canonical" href="https://alterNERDtive.github.io/bindED/">
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>bindED VoiceAttack plugin</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "bindED";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/bindED/";
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> bindED VoiceAttack plugin</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href=".">bindED</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installing">Installing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-keyboard-layouts">Supported Keyboard Layouts</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#need-help-want-to-contribute">Need Help / Want to Contribute?</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="troubleshooting/">Troubleshooting</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="" href="https://github.com/alterNERDtive/VoiceAttack-profiles/issues/">⎋ Report a Bug</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">bindED VoiceAttack plugin</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>bindED</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/alterNERDtive/bindED/edit/devel/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+    <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+        <a href="troubleshooting/" class="btn btn-neutral float-right" title="Troubleshooting">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="binded">bindED<a class="headerlink" href="#binded" title="Permanent link">&para;</a></h1>
+<p>This VoiceAttack plugin reads keybindings in Elite:Dangerous and stores them as
+VoiceAttack variables. It was originally written by Gary (the developer of
+VoiceAttack) <a href="https://forum.voiceattack.com/smf/index.php?topic=564.0">and published on the VoiceAttack
+forums</a>. You can find
+the <a href="ReadMe.txt">original README here</a> for reference.</p>
+<p>I have basically done a complete rewrite the original source code at this point
+and added a lot of features including automatic detection of the correct
+bindings file and support for non-US keyboard layouts (see below for details).</p>
+<h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
+<p>Grab <code>bindEDplugin.zip</code> from the <a href="https://github.com/alterNERDtive/bindED/releases/latest">release
+page</a> and extract it
+into your VoiceAttack’s <code>Apps</code> directory. If you have an older version already
+installed, please delete the <code>bindED</code> subfolder first.</p>
+<p>For Horizons players, that’s it! When VoiceAttack loads, bindED will
+automatically detect your bindings. It will also keep a watchful eye on Elite’s
+bindings folder and reload them when there is a change!</p>
+<p>For Odyssey players, there is an additional caveat: you have to use the same
+preset for all 4 sections (general, ship, SRV, foot). Sadly it’s not apparent
+from the files which of these sections a bind belongs to, so there is no simple
+way to read multiple files properly.</p>
+<h2 id="supported-keyboard-layouts">Supported Keyboard Layouts<a class="headerlink" href="#supported-keyboard-layouts" title="Permanent link">&para;</a></h2>
+<p>If you are using any non-US layout you might have noticed that some binds don’t
+work. You can set a text variable in VoiceAttack called <code>bindED.layout#</code> to the
+layout you want to use. If the variable is not set it will defaut to <code>en-us</code>.</p>
+<p>The following layouts are supported out of the box:</p>
+<ul>
+<li>en-US</li>
+<li>en-GB</li>
+<li>de-neo2</li>
+</ul>
+<p>If you are on a different layout, you can either use only the keys that work
+with the default layout or add support for your preferred layout yourself. See
+<a href="troubleshooting/#adding-a-keyboard-layout">Troubleshooting#Adding a Keyboard Layout</a>.</p>
+<h2 id="need-help-want-to-contribute">Need Help / Want to Contribute?<a class="headerlink" href="#need-help-want-to-contribute" title="Permanent link">&para;</a></h2>
+<p>If you run into any errors have a look at <a href="#troubleshooting">#Troubleshooting</a>. If your problem
+persists, please <a href="https://github.com/alterNERDtive/bindED/issues/new">file an
+issue</a>. Thanks! :)</p>
+<p>You can also <a href="https://discord.gg/YeXh2s5UC6">say “Hi” on Discord</a> if that is
+your thing.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="troubleshooting/" class="btn btn-neutral float-right" title="Troubleshooting">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/alterNERDtive/bindED/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+        <span style="margin-left: 15px"><a href="troubleshooting/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.1.2
+Build Date UTC : 2021-06-14 09:25:11.623909+00:00
+-->
