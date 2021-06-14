@@ -36,6 +36,11 @@ Before starting VoiceAttack with the plugin installed, you need to load the game
 at least once! That will create the directory structure the plugin is going to
 read from. You also need to have changed _any_ key in controls options.
 
+If you start Elite for the first time with VoiceAttack already running you will
+have to either invoke the plugin’s `loadbinds` config manually or restart
+VoiceAttack after you have loaded into the game’s main menu and changed any key
+bind.
+
 ## Horizons vs. Odyssey
 
 **Note**: If you do not own Odyssey, everything will work just as before!
