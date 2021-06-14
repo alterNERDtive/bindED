@@ -1,4 +1,4 @@
-# devel
+ï»¿# devel
 
 ## Added
 
@@ -24,7 +24,7 @@
 * Updated the README to reflect that you need to load the game once, and that
   you need to have changed at least a single bind. (#19)
 * Updated the README to reflect that you have to use a single preset for all
-  sections if you’re playing Odyssey.
+  sections if youâ€™re playing Odyssey.
 
 ## Fixed
 
@@ -55,7 +55,7 @@ Horizons or Odyssey.
 
 To keep hassle to a minimum, the recommended way to change binds is to do it
 from Odyssey. When a change to the Odyssey file is detected, the plugin will
-by default overwrite Horizons’ binds with it. To prevent that and keep entirely
+by default overwrite Horizonsâ€™ binds with it. To prevent that and keep entirely
 separate binds, you can set `bindED.disableHorizonsSync#` (yes, including the
 pound sign) to `true` in your VoiceAttack profile.
 
@@ -84,7 +84,7 @@ pound sign) to `true` in your VoiceAttack profile.
 
 ## Added
 
-* The current layout’s key map file is now monitored for changes. Should make
+* The current layoutâ€™s key map file is now monitored for changes. Should make
   adding support for new layouts slightly less annoying. (#4)
 
 -----
@@ -93,7 +93,7 @@ pound sign) to `true` in your VoiceAttack profile.
 
 I did a complete refactoring of everything to prepare for some juicy new
 features! Sadly that also meant breaking backwards compatibility. On the plus
-side, the things that no longer work like they did in Gary’s initial release
+side, the things that no longer work like they did in Garyâ€™s initial release
 should basically never be used anyway.
 
 ## Removed
@@ -120,7 +120,7 @@ should basically never be used anyway.
 * The `listbinds` context will set the text variable `~bindED.bindsList` to a
   list of bindings present in the current bindings file. (#1)
 * The `missingbinds` context will create a report of missing binds (anything
-  that doesn’t have keyboard binds) and save it to `~bindED.missingBinds`. (#2)
+  that doesnâ€™t have keyboard binds) and save it to `~bindED.missingBinds`. (#2)
 * The included `bindED-reports` profile runs a missing binds report and a binds
   list report when you load it and saves them to your Desktop.
 
@@ -130,6 +130,6 @@ should basically never be used anyway.
 
 ## Added
 
-* Support for non-US keyboard layouts. `de-neo2` is included (because that’s
-  what I’m using), others can be added ([see the wiki for
+* Support for non-US keyboard layouts. `de-neo2` is included (because thatâ€™s
+  what Iâ€™m using), others can be added ([see the wiki for
   instructions](https://github.com/alterNERDtive/bindED/wiki/Keyboard-Layouts)).
