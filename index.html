@@ -52,6 +52,8 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#installing">Installing</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#using-binds-in-commands">Using Binds In Commands</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#supported-keyboard-layouts">Supported Keyboard Layouts</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#need-help-want-to-contribute">Need Help / Want to Contribute?</a>
@@ -127,6 +129,14 @@ bindings folder and reload them when there is a change!</p>
 preset for all 4 sections (general, ship, SRV, foot). Sadly it’s not apparent
 from the files which of these sections a bind belongs to, so there is no simple
 way to read multiple files properly.</p>
+<h2 id="using-binds-in-commands">Using Binds In Commands<a class="headerlink" href="#using-binds-in-commands" title="Permanent link">&para;</a></h2>
+<p>Each bind in Elite Dangerous has a name assigned in the binds file. The plugin
+takes this name, prepends <code>ed</code> and turns it into a VoiceAttack variable.</p>
+<p>To press the corresponding key in the game, you will have to create a new
+<code>Key Press</code> action in a VoiceAttack command and use the desired variable named
+after the ingame bind. In order to toggle your landing gear for example you will
+have to create a <code>Key Press</code> action and use the <code>edLandingGearToggle</code> variable.</p>
+<p><img alt="keypress.png" src="images/keypress.png" /></p>
 <h2 id="supported-keyboard-layouts">Supported Keyboard Layouts<a class="headerlink" href="#supported-keyboard-layouts" title="Permanent link">&para;</a></h2>
 <p>If you are using any non-US layout you might have noticed that some binds don’t
 work. You can set a text variable in VoiceAttack called <code>bindED.layout#</code> to the
@@ -201,5 +211,5 @@ your thing.</p>
 
 <!--
 MkDocs version : 1.1.2
-Build Date UTC : 2021-06-14 09:29:21.547647+00:00
+Build Date UTC : 2021-06-14 09:57:13.521897+00:00
 -->
