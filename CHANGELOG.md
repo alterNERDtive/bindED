@@ -10,6 +10,7 @@
   troubleshooting.
 * `bindED-diagnostics` profile: runs the `diagnostics` plugin context on load.
   Should be the first troubleshooting step.
+* Error message if multiple control presets are in use (Odyssey only).
 
 # 4.1 (2021-05-22)
 
