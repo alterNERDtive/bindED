@@ -1,4 +1,4 @@
-site_name: "bindED VoiceAttack plugin"
+﻿site_name: "bindED VoiceAttack plugin"
 site_url: https://alterNERDtive.github.io/bindED
 repo_url: https://github.com/alterNERDtive/bindED
 edit_uri: "edit/devel/docs/"
@@ -22,4 +22,5 @@ markdown_extensions:
 nav:
     - 'index.md'
     - 'troubleshooting.md'
+    - '⎋ Changelog': 'https://github.com/alterNERDtive/bindED/blob/release/CHANGELOG.md'
     - '⎋ Report a Bug': 'https://github.com/alterNERDtive/bindED/issues/'
