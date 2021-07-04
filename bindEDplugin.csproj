@@ -65,9 +65,7 @@
     <Content Include="EDMap-en-us.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="docs\ReadMe.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="docs\ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
