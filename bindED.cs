@@ -90,7 +90,7 @@ namespace bindEDplugin
         }
         private static Dictionary<string, List<string>>? _binds;
 
-        public static string VERSION = "4.1";
+        public static string VERSION = "4.2";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
