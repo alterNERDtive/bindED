@@ -85,7 +85,7 @@ namespace bindEDplugin
 
         private static Dictionary<string, List<string>>? Binds
         {
-            get => _binds ??= ReadBinds(DetectBindsFile(Preset));
+            get => _binds ??= ReadBinds(DetectBindsFile(Preset!));
             set => _binds = value;
         }
         private static Dictionary<string, List<string>>? _binds;
@@ -132,8 +132,8 @@ namespace bindEDplugin
                 {
                     LogInfo($"current keybord layout: {Layout}");
                     LogInfo($"current preset: {Preset}");
-                    LogInfo($"detected binds file: {(new FileInfo(DetectBindsFile(Preset))).Name}");
-                    LogInfo($"detected binds file (full path): {DetectBindsFile(Preset)}");
+                    LogInfo($"detected binds file: {(new FileInfo(DetectBindsFile(Preset!))).Name}");
+                    LogInfo($"detected binds file (full path): {DetectBindsFile(Preset!)}");
                 }
                 else if (context == "listbinds")
                 {
@@ -310,7 +310,7 @@ namespace bindEDplugin
             return presets.First();
         }
 
-        private static string DetectBindsFile(string? preset)
+        private static string DetectBindsFile(string preset)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
             FileInfo[] bindFiles = dirInfo.GetFiles()
