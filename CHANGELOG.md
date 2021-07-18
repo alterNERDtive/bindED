@@ -12,6 +12,10 @@
   Should be the first troubleshooting step.
 * Error message if multiple control presets are in use (Odyssey only).
 
+## Fixed
+
+* Now correctly loads presets that contain regex special characters.
+
 # 4.1 (2021-05-22)
 
 ## Added

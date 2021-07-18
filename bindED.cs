@@ -314,7 +314,7 @@ namespace bindEDplugin
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
             FileInfo[] bindFiles = dirInfo.GetFiles()
-                .Where(i => Regex.Match(i.Name, $@"^{preset}\.[34]\.0\.binds$").Success)
+                .Where(i => Regex.Match(i.Name, $@"^{Regex.Escape(preset)}\.[34]\.0\.binds$").Success)
                 .OrderByDescending(p => p.Name).ToArray();
 
             if (bindFiles.Count() == 0)
