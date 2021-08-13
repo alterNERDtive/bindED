@@ -1,4 +1,4 @@
-﻿# devel
+﻿# 4.2 (2021-08-13)
 
 ## Added
 
@@ -14,7 +14,7 @@
 
 ## Fixed
 
-* Now correctly loads presets that contain regex special characters.
+* Now correctly loads presets that contain regex special characters (#28).
 
 # 4.1 (2021-05-22)
 
