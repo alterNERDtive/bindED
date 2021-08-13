@@ -1,9 +1,8 @@
-﻿# All files
 [*]
 guidelines = 80
 end_of_line = lf
 insert_final_newline = true
+charset = utf-8-bom
 
-# C# or VB files
-[*.{cs,vb}]
+[*.cs]
 guidelines = 80, 120

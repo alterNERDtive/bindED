@@ -85,12 +85,12 @@ namespace bindEDplugin
 
         private static Dictionary<string, List<string>>? Binds
         {
-            get => _binds ??= ReadBinds(DetectBindsFile(Preset));
+            get => _binds ??= ReadBinds(DetectBindsFile(Preset!));
             set => _binds = value;
         }
         private static Dictionary<string, List<string>>? _binds;
 
-        public static string VERSION = "4.1";
+        public static string VERSION = "4.2";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -128,7 +128,14 @@ namespace bindEDplugin
             try
             {
                 string context = _VA.Context.ToLower();
-                if (context == "listbinds")
+                if (context == "diagnostics")
+                {
+                    LogInfo($"current keybord layout: {Layout}");
+                    LogInfo($"current preset: {Preset}");
+                    LogInfo($"detected binds file: {(new FileInfo(DetectBindsFile(Preset!))).Name}");
+                    LogInfo($"detected binds file (full path): {DetectBindsFile(Preset!)}");
+                }
+                else if (context == "listbinds")
                 {
                     ListBinds(Binds, _VA.GetText("bindED.separator") ?? "\r\n");
                 }
@@ -292,14 +299,22 @@ namespace bindEDplugin
             {
                 throw new FileNotFoundException("No 'StartPreset.start' file found. Please run Elite: Dangerous at least once, then restart VoiceAttack.");
             }
-            return File.ReadAllLines(startFile).First();
+
+            IEnumerable<string> presets = File.ReadAllLines(startFile).Distinct();
+            if (presets.Count() > 1)
+            {
+                LogError($"You have selected multiple control presets ('{ String.Join("', '", presets) }'). "
+                    + $"Only binds from '{ presets.First() }' will be used. Please refer to the documentation for more information.");
+            }
+
+            return presets.First();
         }
 
-        private static string DetectBindsFile(string? preset)
+        private static string DetectBindsFile(string preset)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(_bindingsDir);
             FileInfo[] bindFiles = dirInfo.GetFiles()
-                .Where(i => Regex.Match(i.Name, $@"^{preset}\.[34]\.0\.binds$").Success)
+                .Where(i => Regex.Match(i.Name, $@"^{Regex.Escape(preset)}\.[34]\.0\.binds$").Success)
                 .OrderByDescending(p => p.Name).ToArray();
 
             if (bindFiles.Count() == 0)

@@ -54,6 +54,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="docs\index.md" />
+    <Content Include=".gitignore" />
     <Content Include="EDMap-de-neo2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -63,19 +65,22 @@
     <Content Include="EDMap-en-us.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ReadMe.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="docs\ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="bindED-diagnostics-Profile.vap">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="bindED-reports-Profile.vap">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="CHANGELOG.md" />
+    <None Include="docs\troubleshooting.md" />
     <None Include="LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="mkdocs.yml" />
     <None Include="README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
