@@ -1,4 +1,4 @@
-# bindED
+Ôªø# bindED
 
 This VoiceAttack plugin reads keybindings in Elite:Dangerous and stores them as
 VoiceAttack variables. It was originally written by Gary (the developer of
@@ -18,10 +18,10 @@ Pages](https://alterNERDtive.github.io/bindED).
 
 ## Need Help / Want to Contribute?
 
-Have a loot at [the troubleshooting
+Have a look at [the troubleshooting
 guide](https://alterNERDtive.github.io/bindED/troubleshooting). If your problem
 persists, please [file an
 issue](https://github.com/alterNERDtive/bindED/issues/new). Thanks! :)
 
-You can also [say ìHiî on Discord](https://discord.gg/YeXh2s5UC6) if that is
+You can also [say ‚ÄúHi‚Äù on Discord](https://discord.gg/YeXh2s5UC6) if that is
 your thing.
