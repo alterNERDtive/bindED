@@ -7,7 +7,7 @@ forums](https://forum.voiceattack.com/smf/index.php?topic=564.0). You can find
 the [original README here](https://alterNERDtive.github.io/bindED/ReadMe.txt)
 for reference.
 
-I have basically done a complete rewrite the original source code at this point
+I have basically done a complete rewrite of the original source code at this point
 and added a lot of features including automatic detection of the correct
 bindings file and support for non-US keyboard layouts (see below for details).
 
