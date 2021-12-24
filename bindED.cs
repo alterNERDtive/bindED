@@ -90,7 +90,7 @@ namespace bindEDplugin
         }
         private static Dictionary<string, List<string>>? _binds;
 
-        public static string VERSION = "4.2";
+        public static string VERSION = "4.2.1";
 
         public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
 
@@ -294,10 +294,14 @@ namespace bindEDplugin
 
         private static string DetectPreset()
         {
-            string startFile = Path.Combine(_bindingsDir, "StartPreset.start");
+            string startFile = Path.Combine(_bindingsDir, "StartPreset.4.start");
             if (!File.Exists(startFile))
             {
-                throw new FileNotFoundException("No 'StartPreset.start' file found. Please run Elite: Dangerous at least once, then restart VoiceAttack.");
+                startFile = Path.Combine(_bindingsDir, "StartPreset.start");
+                if (!File.Exists(startFile))
+                {
+                    throw new FileNotFoundException("No 'StartPreset.start' file found. Please run Elite: Dangerous at least once, then restart VoiceAttack.");
+                }
             }
 
             IEnumerable<string> presets = File.ReadAllLines(startFile).Distinct();

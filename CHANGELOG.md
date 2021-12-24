@@ -1,4 +1,14 @@
-﻿# 4.2 (2021-08-13)
+﻿# 4.2.1 (2021-12-24)
+
+## Fixed
+
+* Added support for Odyssey’s new `StartPreset.4.start` file; the preset
+  selected in the Odyssey client will take precedence, so make sure you use the
+  same preset for Horizons (#29).
+
+-----
+
+# 4.2 (2021-08-13)
 
 ## Added
 
@@ -15,6 +25,8 @@
 ## Fixed
 
 * Now correctly loads presets that contain regex special characters (#28).
+
+-----
 
 # 4.1 (2021-05-22)
 
