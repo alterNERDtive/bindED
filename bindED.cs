@@ -164,6 +164,7 @@ namespace bindEDplugin
                     {
                         LogError($"Invalid plugin context '{context}'.");
                     }
+                    LogError("You generally do not need to invoke the plugin manually.");
                 }
             }
             catch (Exception e)
