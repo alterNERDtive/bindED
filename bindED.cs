@@ -156,7 +156,14 @@ namespace bindEDplugin
                 }
                 else
                 {
-                    LogError($"Invalid plugin context {context}.");
+                    if (String.IsNullOrWhiteSpace(context))
+                    {
+                        LogError("Empty plugin context.");
+                    }
+                    else
+                    {
+                        LogError($"Invalid plugin context '{context}'.");
+                    }
                 }
             }
             catch (Exception e)
