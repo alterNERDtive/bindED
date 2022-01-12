@@ -1,4 +1,12 @@
-﻿# 4.2.1 (2021-12-24)
+﻿# devel
+
+## Fixed
+
+* Added specific error message for invoking the plugin without context (#30).
+
+-----
+
+# 4.2.1 (2021-12-24)
 
 ## Fixed
 
