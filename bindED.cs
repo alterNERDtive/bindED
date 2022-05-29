@@ -153,7 +153,7 @@ namespace bindEDplugin
             VA.TextVariableChanged += new Action<string, string, string, Guid?>(TextVariableChanged);
             pluginPath = Path.GetDirectoryName(VA.PluginPath());
 
-            VA.SetText("bindED.version", VERSION);
+            VA.SetText("bindED.version", VERSION.ToString());
             VA.SetText("bindED.fork", "alterNERDtive");
 
             try
