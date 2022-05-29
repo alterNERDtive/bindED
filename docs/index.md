@@ -38,6 +38,13 @@ have to create a `Key Press` action and use the `edLandingGearToggle` variable.
 
 ![[keypress.png]]
 
+Instead of looking through a binds file to find variable names, you can also
+import and run the `bindED-reports` profile from the plugin directory. It will
+put a) a list of all binds and b) a list of all missing binds on your Desktop.
+
+Currently these lists will include _all_ binds, including axes that cannot be
+bound to the keyboard.
+
 ## Supported Keyboard Layouts
 
 If you are using any non-US layout you might have noticed that some binds don’t

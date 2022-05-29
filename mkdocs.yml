@@ -4,7 +4,7 @@ repo_url: https://github.com/alterNERDtive/bindED
 edit_uri: "edit/devel/docs/"
 site_description: "This VoiceAttack plugin reads keybindings in Elite:Dangerous and stores them as VoiceAttack variables."
 site_author: "alterNERDtive"
-remote_name: "ssh-origin"
+remote_name: "origin"
 
 theme:
     name: readthedocs
