@@ -3,6 +3,8 @@
 ## Fixed
 
 * Added specific error message for invoking the plugin without context (#30).
+* Clarified that the default `en-US` layout will wrok for most keys on most
+  layouts. (#32)
 
 -----
 

@@ -51,7 +51,10 @@ If you are using any non-US layout you might have noticed that some binds don’
 work. You can set a text variable in VoiceAttack called `bindED.layout#` to the
 layout you want to use. If the variable is not set it will defaut to `en-us`.
 
-The following layouts are supported out of the box:
+This default should work for most™ keys on any keyboard layout natively
+supported by Elite Dangerous; some special keys might not be usable.
+
+The following layouts are _fully_ supported out of the box:
 
 * en-US
 * en-GB
