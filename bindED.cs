@@ -38,6 +38,8 @@ namespace bindEDplugin
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "historic, grandfathered in")]
     public class bindEDPlugin
     {
+        private static readonly Version VERSION = new ("4.2.1");
+
         private static readonly string BindingsDir = Path.Combine(
             Environment.GetFolderPath(
             Environment.SpecialFolder.LocalApplicationData),
@@ -120,9 +122,6 @@ namespace bindEDplugin
             get => binds ??= ReadBinds(DetectBindsFile(Preset!));
             set => binds = value;
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:Elements should appear in the correct order", Justification = "nicer grouping")]
-        private static readonly Version VERSION = new ("4.2.1");
 
         /// <summary>
         /// The plugin’s display name, as required by the VoiceAttack plugin API.
