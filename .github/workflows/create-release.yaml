@@ -1,0 +1,30 @@
+﻿name: Create release on tag push
+
+on:
+  push:
+    tags:
+      - 'release/*'
+
+jobs:
+  build:
+    name: Build bindED
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build
+        run: msbuild -t:build -p:configuration=release
+
+      - name: Draft release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "bindEDplugin.zip"
+          bodyFile: "CHANGELOG.md"
+          draft: true

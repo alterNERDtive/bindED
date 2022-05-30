@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC89314B-E504-4D5D-BB48-F1E3E4980A13}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\workflows\create-release.yaml = .github\workflows\create-release.yaml
 		Directory.build.props = Directory.build.props
 		GlobalSuppressions.cs = GlobalSuppressions.cs
 		stylecop.json = stylecop.json

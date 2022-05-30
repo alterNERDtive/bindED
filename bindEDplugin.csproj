@@ -87,17 +87,11 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>powershell if (Test-Path '$(SolutionDir)bindEDplugin.zip') { Remove-Item -Path '$(SolutionDir)bindEDplugin.zip' }</PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release (powershell Compress-Archive -Path '$(TargetDir)' -DestinationPath '$(SolutionDir)bindEDplugin.zip' -Force)</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
+  </Target> -->
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
+    <ZipDirectory SourceDirectory="bin" DestinationFile="bindEDplugin.zip" Overwrite="true" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
