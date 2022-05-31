@@ -38,7 +38,7 @@ namespace bindEDplugin
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "historic, grandfathered in")]
     public class bindEDPlugin
     {
-        private static readonly Version VERSION = new ("4.2.1");
+        private static readonly Version VERSION = new ("4.2.2");
 
         private static readonly string BindingsDir = Path.Combine(
             Environment.GetFolderPath(
