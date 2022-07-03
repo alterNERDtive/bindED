@@ -72,3 +72,6 @@ issue](https://github.com/alterNERDtive/bindED/issues/new). Thanks! :)
 
 You can also [say “Hi” on Discord](https://discord.gg/YeXh2s5UC6) if that is
 your thing.
+
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/alterNERDtive?style=for-the-badge)](https://github.com/sponsors/alterNERDtive)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S1DLYBS)
