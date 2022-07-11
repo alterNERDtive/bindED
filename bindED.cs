@@ -27,6 +27,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
 
+using alterNERDtive.Yavapf;
+using VoiceAttack;
+
 namespace bindEDplugin
 {
     /// <summary>
@@ -36,9 +39,9 @@ namespace bindEDplugin
     [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:Element should begin with upper-case letter", Justification = "historic, grandfathered in")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1649:File name should match first type name", Justification = "historic, grandfathered in")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "historic, grandfathered in")]
-    public class bindEDPlugin
+    public class bindEDPlugin : VoiceAttackPlugin
     {
-        private static readonly Version VERSION = new ("4.2.2");
+        private static readonly bindEDPlugin Plugin;
 
         private static readonly string BindingsDir = Path.Combine(
             Environment.GetFolderPath(
@@ -47,8 +50,6 @@ namespace bindEDplugin
 
         private static readonly Dictionary<string, int> FileEventCount = new ();
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1306:Field names should begin with lower-case letter", Justification = "just cause")]
-        private static dynamic? VA;
         private static string? pluginPath;
         private static FileSystemWatcher? bindsWatcher;
         private static FileSystemWatcher? mapWatcher;
@@ -56,6 +57,17 @@ namespace bindEDplugin
         private static Dictionary<string, int>? keyMap;
         private static string? preset;
         private static Dictionary<string, List<string>>? binds;
+
+        static bindEDPlugin()
+        {
+            Plugin = new ()
+            {
+                Name = "bindED",
+                Version = "4.2.3",
+                Info = "bindED Plugin\n\n2016 VoiceAttack.com\n2020–2022 alterNERDtive",
+                Guid = "{524B4B9A-3965-4045-A39A-A239BF6E2838}",
+            };
+        }
 
         private static FileSystemWatcher BindsWatcher
         {
@@ -93,7 +105,7 @@ namespace bindEDplugin
 
         private static string? Layout
         {
-            get => layout ??= VA?.GetText("bindED.layout#") ?? "en-us";
+            get => layout ??= Plugin.Get<string>("bindED.layout#") ?? "en-us";
             set
             {
                 layout = value;
@@ -127,33 +139,61 @@ namespace bindEDplugin
         /// The plugin’s display name, as required by the VoiceAttack plugin API.
         /// </summary>
         /// <returns>The display name.</returns>
-        public static string VA_DisplayName() => $"bindED Plugin v{VERSION}-alterNERDtive";
+        public static string VA_DisplayName() => Plugin.VaDisplayName();
 
         /// <summary>
         /// The plugin’s description, as required by the VoiceAttack plugin API.
         /// </summary>
         /// <returns>The description.</returns>
-        public static string VA_DisplayInfo() => "bindED Plugin\r\n\r\n2016 VoiceAttack.com\r\n2020–2021 alterNERDtive";
+        public static string VA_DisplayInfo() => Plugin.VaDisplayInfo();
 
         /// <summary>
         /// The plugin’s GUID, as required by the VoiceAttack plugin API.
         /// </summary>
         /// <returns>The GUID.</returns>
-        public static Guid VA_Id() => new ("{524B4B9A-3965-4045-A39A-A239BF6E2838}");
+        public static Guid VA_Id() => Plugin.VaId();
 
         /// <summary>
         /// The Init method, as required by the VoiceAttack plugin API.
         /// Runs when the plugin is initially loaded.
         /// </summary>
         /// <param name="vaProxy">The VoiceAttack proxy object.</param>
-        public static void VA_Init1(dynamic vaProxy)
-        {
-            VA = vaProxy;
-            VA.TextVariableChanged += new Action<string, string, string, Guid?>(TextVariableChanged);
-            pluginPath = Path.GetDirectoryName(VA.PluginPath());
+        public static void VA_Init1(dynamic vaProxy) => Plugin.VaInit1(vaProxy);
 
-            VA.SetText("bindED.version", VERSION.ToString());
-            VA.SetText("bindED.fork", "alterNERDtive");
+        /// <summary>
+        /// The Invoke method, as required by the VoiceAttack plugin API.
+        /// Runs whenever a plugin context is invoked.
+        /// </summary>
+        /// <param name="vaProxy">The VoiceAttack proxy object.</param>
+        public static void VA_Invoke1(dynamic vaProxy) => Plugin.VaInvoke1(vaProxy);
+
+        /// <summary>
+        /// The Exit method, as required by the VoiceAttack plugin API.
+        /// Runs when VoiceAttack is shut down.
+        /// </summary>
+        /// <param name="vaProxy">The VoiceAttack proxy object.</param>
+        public static void VA_Exit1(dynamic vaProxy) => Plugin.VaExit1(vaProxy);
+
+        /// <summary>
+        /// The StopCommand method, as required by the VoiceAttack plugin API.
+        /// Runs whenever all commands are stopped using the “Stop All Commands”
+        /// button or action.
+        /// </summary>
+        public static void VA_StopCommand() => Plugin.VaStopCommand();
+
+        /// <summary>
+        /// Loads the current binds, enables watching the binds directory for
+        /// changes.
+        /// </summary>
+        /// <param name="vaProxy">The <see cref="VoiceAttackInitProxyClass"/>
+        /// proxy object.</param>
+        [Init]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required by plugin API")]
+        public static void Init(VoiceAttackInitProxyClass vaProxy)
+        {
+            Plugin.Log.LogLevel = LogLevel.INFO;
+            pluginPath = Path.GetDirectoryName(Plugin.Proxy.PluginPath());
+            Plugin.Set<string>("bindED.fork", "alterNERDtive");
 
             try
             {
@@ -161,7 +201,7 @@ namespace bindEDplugin
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                Plugin.Log.Error(e.Message);
             }
             finally
             {
@@ -171,118 +211,114 @@ namespace bindEDplugin
         }
 
         /// <summary>
-        /// The Invoke method, as required by the VoiceAttack plugin API.
-        /// Runs whenever a plugin context is invoked.
+        /// Logs some diagnostics regarding the current state of the plugin.
         /// </summary>
-        /// <param name="vaProxy">The VoiceAttack proxy object.</param>
-        public static void VA_Invoke1(dynamic vaProxy)
+        /// <param name="vaProxy">The <see cref="VoiceAttackInvokeProxyClass"/>
+        /// proxy object.</param>
+        [Context("diagnostics")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required by plugin API")]
+        public static void DiagnosticsContext(VoiceAttackInvokeProxyClass vaProxy)
         {
-            VA = vaProxy;
+            Plugin.Log.Info($"Current keybord layout: {Layout}");
+            Plugin.Log.Info($"Current preset: {Preset}");
+            Plugin.Log.Info($"Detected binds file: {new FileInfo(DetectBindsFile(Preset!)).Name}");
+            Plugin.Log.Info($"Detected binds file (full path): {DetectBindsFile(Preset!)}");
+        }
+
+        /// <summary>
+        /// Lists all currently loaded binds.
+        /// </summary>
+        /// <param name="vaProxy">The <see cref="VoiceAttackInvokeProxyClass"/>
+        /// proxy object.</param>
+        [Context("listbinds")]
+        public static void ListBindsContext(VoiceAttackInvokeProxyClass vaProxy)
+        {
+            vaProxy.Set<string>("~bindED.bindsList", string.Join(vaProxy.Get<string>("bindED.separator") ?? "\n", Binds!.Keys));
+            Plugin.Log.Info("List of Elite binds saved to TXT variable '~bindED.bindsList'.");
+        }
+
+        /// <summary>
+        /// Forces a reload of all binds.
+        /// </summary>
+        /// <param name="vaProxy">The <see cref="VoiceAttackInvokeProxyClass"/>
+        /// proxy object.</param>
+        [Context("loadbinds")]
+        public static void LoadBindsContext(VoiceAttackInvokeProxyClass vaProxy)
+        {
+            // force reset everything
+            Layout = null;
+            Preset = null;
+            if (!string.IsNullOrWhiteSpace(vaProxy.Get<string>("~bindsFile")))
+            {
+                Binds = ReadBinds(Path.Combine(BindingsDir, vaProxy.Get<string>("~bindsFile")));
+            }
+
+            LoadBinds(Binds);
+        }
+
+        /// <summary>
+        /// Reports missing binds.
+        /// </summary>
+        /// <param name="vaProxy">The <see cref="VoiceAttackInvokeProxyClass"/>
+        /// proxy object.</param>
+        [Context("missingbinds")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required by plugin API")]
+        public static void MissingBindsContext(VoiceAttackInvokeProxyClass vaProxy)
+        {
+            List<string> missing = new (256);
+            foreach (KeyValuePair<string, List<string>> bind in Binds!)
+            {
+                if (bind.Value.Count == 0)
+                {
+                    missing.Add(bind.Key);
+                }
+            }
+
+            if (missing.Count > 0)
+            {
+                vaProxy.Set<string>("~bindED.missingBinds", string.Join("\n", missing));
+                vaProxy.Set<bool>("~bindED.missingBinds", true);
+                Plugin.Log.Info("List of missing Elite binds saved to TXT variable '~bindED.missingBinds'.");
+            }
+            else
+            {
+                Plugin.Log.Info($"No missing keyboard binds found.");
+            }
+        }
+
+        /// <summary>
+        /// Gives an explicit error message if the plugin is invoked without a
+        /// plugin context.
+        /// </summary>
+        /// <param name="vaProxy">The <see cref="VoiceAttackInvokeProxyClass"/>
+        /// proxy object.</param>
+        [Context("")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required by plugin API")]
+        public static void EmptyContext(VoiceAttackInvokeProxyClass vaProxy)
+        {
+            Plugin.Log.Error("Empty plugin context. You generally do not need to invoke the plugin manually.");
+        }
+
+        /// <summary>
+        /// Handles changes to the keyboard layout.
+        /// </summary>
+        /// <param name="name">The variable name (not used).</param>
+        /// <param name="from">The old keyboard layout.</param>
+        /// <param name="to">The new keyboard layout.</param>
+        [String("bindED.layout#")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required by plugin API")]
+        public static void LayoutChanged(string name, string from, string to)
+        {
+            Plugin.Log.Info($"Keyboard layout changed to '{to}', reloading …");
+            Layout = to;
             try
             {
-                string context = VA.Context.ToLower();
-                if (context == "diagnostics")
-                {
-                    LogInfo($"current keybord layout: {Layout}");
-                    LogInfo($"current preset: {Preset}");
-                    LogInfo($"detected binds file: {new FileInfo(DetectBindsFile(Preset!)).Name}");
-                    LogInfo($"detected binds file (full path): {DetectBindsFile(Preset!)}");
-                }
-                else if (context == "listbinds")
-                {
-                    ListBinds(Binds, VA.GetText("bindED.separator") ?? "\r\n");
-                }
-                else if (context == "loadbinds")
-                {
-                    // force reset everything
-                    Layout = null;
-                    Preset = null;
-                    if (!string.IsNullOrWhiteSpace(VA.GetText("~bindsFile")))
-                    {
-                        Binds = ReadBinds(Path.Combine(BindingsDir, VA.GetText("~bindsFile")));
-                    }
-
-                    LoadBinds(Binds);
-                }
-                else if (context == "missingbinds")
-                {
-                    MissingBinds(Binds);
-                }
-                else
-                {
-                    if (string.IsNullOrWhiteSpace(context))
-                    {
-                        LogError("Empty plugin context.");
-                    }
-                    else
-                    {
-                        LogError($"Invalid plugin context '{context}'.");
-                    }
-
-                    LogError("You generally do not need to invoke the plugin manually.");
-                }
+                LoadBinds(Binds);
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                Plugin.Log.Error(e.Message);
             }
-        }
-
-        /// <summary>
-        /// The Exit method, as required by the VoiceAttack plugin API.
-        /// Runs when VoiceAttack is shut down.
-        /// </summary>
-        /// <param name="vaProxy">The VoiceAttack proxy object.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "required by VoiceAttack plugin API")]
-        public static void VA_Exit1(dynamic vaProxy)
-        {
-        }
-
-        /// <summary>
-        /// The StopCommand method, as required by the VoiceAttack plugin API.
-        /// Runs whenever all commands are stopped using the “Stop All Commands”
-        /// button or action.
-        /// </summary>
-        public static void VA_StopCommand()
-        {
-        }
-
-        private static void TextVariableChanged(string name, string from, string to, Guid? internalID = null)
-        {
-            if (name == "bindED.layout#")
-            {
-                LogInfo($"Keyboard layout changed to '{to}', reloading …");
-                Layout = to;
-                try
-                {
-                    LoadBinds(Binds);
-                }
-                catch (Exception e)
-                {
-                    LogError(e.Message);
-                }
-            }
-        }
-
-        private static void LogError(string message)
-        {
-            VA!.WriteToLog($"ERROR | bindED: {message}", "red");
-        }
-
-        private static void LogInfo(string message)
-        {
-            VA!.WriteToLog($"INFO | bindED: {message}", "blue");
-        }
-
-        private static void LogWarn(string message)
-        {
-            VA!.WriteToLog($"WARN | bindED: {message}", "yellow");
-        }
-
-        private static void ListBinds(Dictionary<string, List<string>>? binds, string separator)
-        {
-            VA!.SetText("~bindED.bindsList", string.Join(separator, binds!.Keys));
-            LogInfo("List of Elite binds saved to TXT variable '~bindED.bindsList'.");
         }
 
         private static void LoadBinds(Dictionary<string, List<string>>? binds)
@@ -306,41 +342,19 @@ namespace bindEDplugin
                         else
                         {
                             valid = false;
-                            LogError($"No valid key code for '{key}' found, skipping bind for '{bind.Key}' …");
+                            Plugin.Log.Warn($"No valid key code for '{key}' found, skipping bind for '{bind.Key}' …");
                         }
                     }
 
                     if (valid)
                     {
-                        VA!.SetText(bind.Key, value);
+                        Plugin.Set<string>(bind.Key, value);
                     }
                 }
             }
 
-            LogInfo($"Elite binds '{(string.IsNullOrWhiteSpace(VA!.GetText("~bindsFile")) ? Preset : VA!.GetText("~bindsFile"))}' for layout '{Layout}' loaded successfully.");
-        }
-
-        private static void MissingBinds(Dictionary<string, List<string>>? binds)
-        {
-            List<string> missing = new (256);
-            foreach (KeyValuePair<string, List<string>> bind in binds!)
-            {
-                if (bind.Value.Count == 0)
-                {
-                    missing.Add(bind.Key);
-                }
-            }
-
-            if (missing.Count > 0)
-            {
-                VA!.SetText("~bindED.missingBinds", string.Join("\r\n", missing));
-                VA!.SetBoolean("~bindED.missingBinds", true);
-                LogInfo("List of missing Elite binds saved to TXT variable '~bindED.missingBinds'.");
-            }
-            else
-            {
-                LogInfo($"No missing keyboard binds found.");
-            }
+            //FIXXME: suppress warning for possible race condition
+            Plugin.Log.Info($"Elite binds '{(string.IsNullOrWhiteSpace(Plugin.Get<string>("~bindsFile")) ? Preset : Plugin.Get<string>("~bindsFile"))}' for layout '{Layout}' loaded successfully.");
         }
 
         private static Dictionary<string, int> LoadKeyMap(string layout)
@@ -357,8 +371,7 @@ namespace bindEDplugin
                 string[] arItem = line.Split(";".ToCharArray(), 2, StringSplitOptions.RemoveEmptyEntries);
                 if ((arItem.Count() == 2) && (!string.IsNullOrWhiteSpace(arItem[0])) && (!map.ContainsKey(arItem[0])))
                 {
-                    ushort iKey;
-                    if (ushort.TryParse(arItem[1], out iKey))
+                    if (ushort.TryParse(arItem[1], out ushort iKey))
                     {
                         if (iKey > 0 && iKey < 256)
                         {
@@ -391,7 +404,7 @@ namespace bindEDplugin
             IEnumerable<string> presets = File.ReadAllLines(startFile).Distinct();
             if (presets.Count() > 1)
             {
-                LogError($"You have selected multiple control presets ('{string.Join("', '", presets)}'). "
+                Plugin.Log.Warn($"You have selected multiple control presets ('{string.Join("', '", presets)}'). "
                     + $"Only binds from '{presets.First()}' will be used. Please refer to the documentation for more information.");
             }
 
@@ -493,24 +506,24 @@ namespace bindEDplugin
                     // binds.
                     if (name == $"EDMap-{Layout!.ToLower()}.txt")
                     {
-                        LogInfo($"Key map for layout '{Layout}' has changed, reloading …");
+                        Plugin.Log.Info($"Key map for layout '{Layout}' has changed, reloading …");
                         KeyMap = null;
                         LoadBinds(Binds);
                     }
                     else if (name == "StartPreset.start")
                     {
-                        LogInfo("Controls preset has changed, reloading …");
+                        Plugin.Log.Info("Controls preset has changed, reloading …");
                         Preset = null;
                         LoadBinds(Binds);
                     }
                     else if (Regex.Match(name, $@"{Preset}(\.[34]\.0)?\.binds$").Success)
                     {
-                        LogInfo($"Bindings file '{name}' has changed, reloading …");
+                        Plugin.Log.Info($"Bindings file '{name}' has changed, reloading …");
                         Binds = null;
                         LoadBinds(Binds);
 
                         // copy Odyssey -> Horizons
-                        if (name == $"{Preset}.4.0.binds" && !VA!.GetBoolean("bindED.disableHorizonsSync#"))
+                        if (name == $"{Preset}.4.0.binds" && !Plugin.Get<bool>("bindED.disableHorizonsSync#"))
                         {
                             File.WriteAllText(
                                 Path.Combine(BindingsDir, $"{Preset}.3.0.binds"),
@@ -521,7 +534,7 @@ namespace bindEDplugin
                 }
                 catch (Exception e)
                 {
-                    LogError(e.Message);
+                    Plugin.Log.Error(e.Message);
                 }
             }
         }
