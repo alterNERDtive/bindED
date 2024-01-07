@@ -389,6 +389,11 @@ namespace bindEDplugin
             }
 
             IEnumerable<string> presets = File.ReadAllLines(startFile).Distinct();
+            
+            // Remove binds that don't exist
+            FileInfo[] bindFiles = new DirectoryInfo(BindingsDir).GetFiles("*.binds");
+            presets = presets.Where(p => bindFiles.Any(b => b.Name.StartsWith(p)));
+
             if (presets.Count() > 1)
             {
                 LogError($"You have selected multiple control presets ('{string.Join("', '", presets)}'). "
