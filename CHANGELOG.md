@@ -1,4 +1,12 @@
-﻿# 4.2.2 (2022-05-31)
+﻿# devel
+
+## Changed
+
+* Now a [YAVAPF](https://alterNERDtive.github.io/YAVAPF) plugin!
+
+-----
+
+# 4.2.2 (2022-05-31)
 
 ## Fixed
 
